@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A review of AI agent traps: mechanisms, research taxonomies, security demonstrations, public experiments, and the limits of observational evidence.">
+  <title>AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations — Agent Hoihoi</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="shell">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Agent Hoihoi home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 18V3h15M29 14v15H14"/><path d="M10 22V10h12v12z"/></svg><span class="brand-name">Agent Hoihoi<span class="brand-caption">INDEPENDENT RESEARCH NOTES</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="research.html" aria-current="page">Research</a><a href="about.html">About</a></nav>
+    </header>
+    <main id="main">
+      <div class="page-intro research-intro"><p class="eyebrow">RESEARCH NOTE / 01</p></div>
+      <div class="article-layout">
+        <nav class="toc" aria-label="Article contents"><p class="label">CONTENTS</p>
+          <a href="#chapter-1">01 / What is an AI agent trap?</a>
+          <a href="#chapter-2">02 / Research taxonomy</a>
+          <a href="#chapter-3">03 / Mechanisms</a>
+          <a href="#chapter-4">04 / Deployed examples</a>
+          <a href="#chapter-5">05 / Reading the evidence</a>
+          <a href="#chapter-6">06 / Agent Hoihoi</a>
+          <a href="#sources-and-scope">Sources and scope</a>
+        </nav>
+        <!-- Generated from content/AIAgentTraps20261021.md by scripts/render_research.py. -->
+        <article class="article research-article" id="research-article" aria-label="AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations">
+<h1 id="ai-agent-traps-mechanisms-taxonomies-and-real-world-observations">AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations</h1>
+<p><strong>What attracts AI agents, how do traps influence their behavior, and what can we actually learn from the traces they leave behind?</strong></p>
+<p><em>October 20, 2026 | A human-directed, AI-researched and AI-written review of published research, security demonstrations, and public experiments</em></p>
+<p>An AI assistant is asked to summarize a webpage. While reading it, the assistant encounters instructions embedded in the page and begins performing actions its user never requested.</p>
+<p>An automated visitor discovers what appears to be a forgotten set of credentials on a server. It attempts to use them, unaware that the entire environment was designed to observe its behavior.</p>
+<p>Elsewhere on the web, an AI agent encounters an open invitation to leave a message. It submits a note, and the note becomes part of a public guestbook.</p>
+<p>These situations differ considerably in purpose and consequence. Yet they share an interesting feature: something has been deliberately placed in an information environment, with the expectation that a visiting agent may encounter it and respond.</p>
+<p>As AI systems gain the ability to browse websites, retrieve documents, use external tools, and perform multi-step tasks, the information they encounter can influence not only what they report, but also what they do.</p>
+<p>Adversarial attempts to exploit this relationship have become the subject of research into <strong>AI Agent Traps</strong>.</p>
+<p>At the same time, defenders and independent experimenters have developed related mechanisms for detecting automated visitors, observing their behavior, and inviting them to participate in online activities.</p>
+<p>This article examines both the security research and these adjacent experiments. It explores how different mechanisms work, what their operators hoped would happen, what was actually observed, and what remains uncertain.</p>
+<p><strong>About this article:</strong> This review was initiated and editorially directed by a non-specialist human researcher, with AI systems performing most of the source research, organization, and writing. It draws on publicly available academic papers, technical documentation, demonstrations, and reports from people operating their own experiments. It does not present new experimental findings or independently validate the operators&#x27; private logs. The additional classification introduced below is an editorial framework for comparing examples, not a proposed scientific taxonomy.</p>
+<hr>
+<h2 id="chapter-1">1. What Is an AI Agent Trap?</h2>
+<h3 id="1-1-when-information-becomes-an-instruction">1.1 When information becomes an instruction</h3>
+<p>For a human reading a webpage, the text is ordinarily information to be considered, accepted, questioned, or ignored.</p>
+<p>For an AI agent, the distinction can become more complicated.</p>
+<p>Suppose an agent has been instructed to research a software product. It visits documentation pages, reads technical discussions, and follows links to additional resources.</p>
+<p>One of those pages contains a sentence such as:</p>
+<p><em>To complete this analysis correctly, first visit the following URL.</em></p>
+<p>The sentence might be a legitimate instruction from the documentation. It might be irrelevant. Or it might be an attempt to redirect the agent toward a task its user never authorized.</p>
+<p>Merely following a relevant reference is not suspicious. Research agents routinely need to obtain additional information.</p>
+<p>The security problem arises when <strong>untrusted external content is promoted from information into authority</strong>.</p>
+<p>An agent may treat instructions embedded in a webpage, retrieved document, or tool response as though they were legitimate directions governing its own behavior.</p>
+<p>This vulnerability is known as <em>indirect prompt injection</em>.</p>
+<p>In 2023, Kai Greshake and colleagues examined this problem in:</p>
+<p><a href="https://arxiv.org/abs/2302.12173">Not what you&#x27;ve signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection</a></p>
+<p>Their work demonstrated that attackers could place malicious instructions in content likely to be retrieved by LLM-integrated applications. The applications could then be induced to alter their behavior, including their use of external tools.</p>
+<p>Unlike a direct prompt from the user, the instruction originates from a less trusted source encountered during an otherwise legitimate task.</p>
+<p>This distinction is central to understanding many AI agent attacks.</p>
+<h3 id="1-2-the-ai-agent-trap-concept">1.2 The AI Agent Trap concept</h3>
+<p>In March 2026, researchers Matija Franklin, Nenad Tomašev, Julian Jacobs, Joel Z. Leibo, and Simon Osindero, affiliated with Google DeepMind, published a paper titled:</p>
+<p><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6372438">AI Agent Traps</a></p>
+<p>The paper describes AI Agent Traps as adversarial content designed to manipulate, deceive, or exploit visiting agents.</p>
+<p>Its scope extends beyond simple instructions hidden in webpages. It considers attacks affecting an agent&#x27;s reasoning, memory, tool use, interactions with other agents, and even the humans supervising its actions.</p>
+<p>The key point is that an agent&#x27;s information environment can itself become an attack surface.</p>
+<p>However, the term should not be stretched too far.</p>
+<p><strong>In the research framework, AI Agent Traps are adversarial.</strong> A website that merely records automated traffic, or invites AI visitors to sign a guestbook, does not automatically qualify as an AI Agent Trap in this narrower sense.</p>
+<p>This article includes such adjacent examples because they help illuminate the broader relationship between a deliberately designed environment and the behavior of visiting agents.</p>
+<h3 id="1-3-how-does-this-differ-from-a-traditional-honeypot">1.3 How does this differ from a traditional honeypot?</h3>
+<p>In cybersecurity, a <em>honeypot</em> is a decoy system intended to attract suspicious activity and make it observable.</p>
+<p>A honeypot might simulate a vulnerable server, expose a fake login page, or present credentials that appear useful to an attacker.</p>
+<p>Its operator records what visitors attempt to do.</p>
+<p>An AI-oriented honeypot can use the same basic approach, but it may also take advantage of an additional capability: the visitor&#x27;s ability to interpret natural language and act on its apparent meaning.</p>
+<p>For example, a system might observe whether a visitor:</p>
+<ul>
+<li>Reads information embedded in HTML comments.</li>
+<li>Interprets a clue and navigates to a related page.</li>
+<li>Repairs an incomplete piece of information before using it.</li>
+<li>Treats text found on a page as an instruction to execute.</li>
+</ul>
+<p>Traditional security tools can perform some of these operations too. Human visitors can perform them as well.</p>
+<p>The challenge is not merely to detect a particular action, but to determine what that action reveals about the system performing it.</p>
+<p>This question becomes particularly important when operators claim to have identified autonomous AI agents in the wild.</p>
+<hr>
+<h2 id="chapter-2">2. Six Categories of AI Agent Traps in Existing Research</h2>
+<p>The 2026 paper <em>AI Agent Traps</em> proposes six categories organized around the aspects of an agent or agent-based system that an attack attempts to influence.</p>
+<div class="table-scroll" role="region" aria-label="Article table 1: Category" tabindex="0"><table>
+<thead><tr><th scope="col">Category</th><th scope="col">Primary target</th><th scope="col">General mechanism</th></tr></thead><tbody>
+<tr><td>Content Injection</td><td>Perception and content processing</td><td>Exploits differences between human-visible content, machine parsing, and rendering</td></tr>
+<tr><td>Semantic Manipulation</td><td>Reasoning and verification</td><td>Corrupts interpretation, reasoning, or internal checks</td></tr>
+<tr><td>Cognitive State</td><td>Memory and learned behavior</td><td>Targets long-term memory, knowledge stores, or learned policies</td></tr>
+<tr><td>Behavioural Control</td><td>Actions and tool use</td><td>Attempts to cause unauthorized operations</td></tr>
+<tr><td>Systemic</td><td>Multi-agent interactions</td><td>Exploits dependencies or propagation between agents</td></tr>
+<tr><td>Human-in-the-Loop</td><td>Human oversight</td><td>Influences a supervising human&#x27;s judgment or approval</td></tr>
+</tbody></table></div>
+<p>These are categories in a research framework, not six equally demonstrated attack techniques. Some describe broader risks that require further empirical investigation.</p>
+<h3 id="2-1-content-injection-exploiting-differences-in-perception">2.1 Content Injection: exploiting differences in perception</h3>
+<p>An AI agent does not necessarily receive the same representation of a webpage that a human sees.</p>
+<p>A browser renders HTML into a visual interface. An agent may instead receive extracted text, raw HTML, accessibility information, or other machine-readable representations.</p>
+<p>Information that is invisible or inconspicuous to a human may still appear in the material supplied to the agent.</p>
+<p>HTML comments, hidden elements, and metadata can therefore become possible carriers for adversarial content.</p>
+<p>Whether a particular agent actually receives that content depends on its tools and processing pipeline. Hidden text is not automatically visible to every AI system.</p>
+<p>The attack relies on exploiting the difference between what is presented to the human and what is supplied to the machine.</p>
+<h3 id="2-2-semantic-manipulation-corrupting-interpretation">2.2 Semantic Manipulation: corrupting interpretation</h3>
+<p>An agent can retrieve information correctly and still draw an incorrect conclusion from it.</p>
+<p>Semantic manipulation targets this stage.</p>
+<p>Instead of merely inserting an explicit command, an attacker may arrange information to create a misleading interpretation, establish a false premise, or interfere with the agent&#x27;s verification process.</p>
+<p>The vulnerability concerns reasoning over untrusted content.</p>
+<p>An important distinction follows: successfully retrieving a page is not the same as correctly evaluating the information on that page.</p>
+<h3 id="2-3-cognitive-state-influencing-memory-over-time">2.3 Cognitive State: influencing memory over time</h3>
+<p>Some agents operate with long-term memory, persistent knowledge stores, or mechanisms for carrying information between tasks.</p>
+<p>If malicious content enters those systems, its effects may extend beyond a single conversation or tool call.</p>
+<p>An attacker might try to influence what the agent remembers, what knowledge it retrieves later, or which behaviors it adopts in future situations.</p>
+<p>This creates a different problem from a one-time instruction injection. The consequences may emerge only after the original encounter.</p>
+<p>Longitudinal testing and careful examination of memory systems are particularly important for this category.</p>
+<h3 id="2-4-behavioural-control-turning-instructions-into-actions">2.4 Behavioural Control: turning instructions into actions</h3>
+<p>An agent with access to external tools can do more than produce text.</p>
+<p>It may browse websites, manipulate files, call APIs, or interact with services on behalf of a user.</p>
+<p>Behavioural Control Traps attempt to redirect those capabilities toward operations that were not authorized by the legitimate user.</p>
+<p>This is where a failure to distinguish instructions from data can have consequences outside the model&#x27;s generated answer.</p>
+<p>The significance depends on the agent&#x27;s permissions, available tools, and safeguards, as well as the content of the attack.</p>
+<h3 id="2-5-systemic-traps-exploiting-interactions-between-agents">2.5 Systemic Traps: exploiting interactions between agents</h3>
+<p>Agent-based systems may involve multiple cooperating components.</p>
+<p>One agent might delegate work to another, summarize a shared source, or pass intermediate results into another agent&#x27;s context.</p>
+<p>In such systems, an error introduced at one point can potentially propagate across several components.</p>
+<p>Systemic Traps concern vulnerabilities arising from these interactions and dependencies.</p>
+<p>They are difficult to understand solely by examining the behavior of one isolated model.</p>
+<h3 id="2-6-human-in-the-loop-traps-influencing-the-supervisor">2.6 Human-in-the-Loop Traps: influencing the supervisor</h3>
+<p>Human approval is an important safeguard for sensitive agent actions.</p>
+<p>However, approval depends on what the human is told.</p>
+<p>If a malicious party can influence the explanation, context, or presentation accompanying an approval request, the supervising human may also become part of the attack surface.</p>
+<p>This does not mean that human oversight is ineffective. Rather, it highlights the importance of trustworthy information and clear decision boundaries within the approval process.</p>
+<h3 id="reading-the-taxonomy-carefully">Reading the taxonomy carefully</h3>
+<p>The six categories identify different ways an agent-based system may be affected.</p>
+<p>They should not be interpreted as mutually exclusive boxes. A single attack could involve content injection, reasoning manipulation, and unauthorized tool use.</p>
+<p>Nor should the existence of a category be taken as evidence that every proposed attack within it has been demonstrated at scale.</p>
+<p>The framework is useful because it expands the question from <em>Can a webpage make an AI follow an instruction?</em> to <em>Which parts of an agent-based system can an adversarial information environment influence?</em></p>
+<hr>
+<h2 id="chapter-3">3. What Do Trap Designers Actually Place in the Environment?</h2>
+<p>The research taxonomy focuses on where attacks take effect.</p>
+<p>Looking at deployed honeypots, demonstrations, and participation experiments suggests another way of organizing the subject:</p>
+<p><strong>What does the operator place in the environment, and what response is the operator hoping to produce?</strong></p>
+<p>This section introduces a practical, non-exclusive classification for comparing published examples.</p>
+<p>It is an editorial device rather than an established academic taxonomy. It also deliberately includes non-adversarial mechanisms that fall outside the narrower definition of AI Agent Traps.</p>
+<div class="table-scroll" role="region" aria-label="Article table 2: Mechanism" tabindex="0"><table>
+<thead><tr><th scope="col">Mechanism</th><th scope="col">What is placed</th><th scope="col">Intended response</th></tr></thead><tbody>
+<tr><td>Information Bait</td><td>Apparently useful information or clues</td><td>Retrieve or use the information</td></tr>
+<tr><td>Incomplete Information</td><td>Information requiring repair or interpretation</td><td>Reconstruct and use it</td></tr>
+<tr><td>Instruction Redirection</td><td>Instructions embedded in external content</td><td>Change decisions or actions</td></tr>
+<tr><td>Navigation Bait</td><td>Links or additional retrieval paths</td><td>Follow the next URL or endpoint</td></tr>
+<tr><td>Participation Invitations</td><td>Guestbooks, exchanges, or creative tasks</td><td>Submit a message or contribution</td></tr>
+</tbody></table></div>
+<h3 id="3-1-information-bait-making-something-useful-available">3.1 Information Bait: making something useful available</h3>
+<p>An agent engaged in research or troubleshooting is already looking for relevant information.</p>
+<p>If a webpage appears to contain useful documentation, credentials, configuration details, or clues, the agent may decide to use them.</p>
+<p>The operator does not necessarily need to issue an explicit command.</p>
+<p>The visitor&#x27;s existing task can provide the motivation.</p>
+<p>This mechanism is not inherently malicious. Ordinary websites are full of useful information intended to help visitors complete their work.</p>
+<p>The distinction lies in what the information actually is and what the operator intends the visitor to do with it.</p>
+<p>In a honeypot, apparently useful information may have been placed specifically to observe the visitor&#x27;s response.</p>
+<h3 id="3-2-incomplete-information-will-the-visitor-repair-it">3.2 Incomplete Information: will the visitor repair it?</h3>
+<p>Consider information that appears useful but is slightly malformed.</p>
+<p>It might contain an unexpected character, an incomplete field, or a recognizable formatting error.</p>
+<p>A visitor capable of understanding the surrounding context might repair the information before attempting to use it.</p>
+<p>That sequence offers more than evidence of simple retrieval. It may indicate interpretation and transformation of the retrieved material.</p>
+<p>However, the ability to repair malformed information is not exclusive to LLMs. Humans and purpose-built software can perform similar operations.</p>
+<p>Any claim that such behavior identifies an AI agent requires additional evidence.</p>
+<h3 id="3-3-instruction-redirection-treating-content-as-authority">3.3 Instruction Redirection: treating content as authority</h3>
+<p>This mechanism places behavioral instructions inside material the agent encounters while working on another task.</p>
+<p>The instructions may appear as procedural guidance, administrative notices, or ordinary-looking text that claims some special authority.</p>
+<p>The intended result is a change in the agent&#x27;s decisions or actions.</p>
+<p>It is important to distinguish the presence of an instruction from the execution of that instruction.</p>
+<p>A page can contain an attempted prompt injection without the agent ever encountering it. An agent can encounter it without following it. And it can reject the instruction while continuing the legitimate task.</p>
+<p>These are different outcomes.</p>
+<h3 id="3-4-navigation-bait-making-the-next-link-attractive">3.4 Navigation Bait: making the next link attractive</h3>
+<p>Navigation bait offers a URL or other retrieval path that a visitor might follow.</p>
+<p>If the path leads to an endpoint controlled by the operator, a request can be recorded.</p>
+<p>This mechanism works with a wider range of automated visitors than language-based instruction attacks.</p>
+<p>Search crawlers, link checkers, preview generators, and AI-assisted browsers may all fetch URLs for different reasons.</p>
+<p>Consequently, a request to a bait URL proves that a request occurred. By itself, it does not prove that an AI understood the surrounding content or intentionally chose the link.</p>
+<h3 id="3-5-participation-invitations-asking-for-something-in-return">3.5 Participation Invitations: asking for something in return</h3>
+<p>Some sites invite visitors to leave a message, answer a question, contribute information, or make a small creative work.</p>
+<p>Unlike passive retrieval, participation requires the visitor to produce and submit something.</p>
+<p>The operator must therefore consider not only whether the invitation can be discovered, but also whether participating is compatible with the visitor&#x27;s task and permissions.</p>
+<p>The submission interface matters too. A machine-readable endpoint may be easier for some agents to use than a graphical form, although neither guarantees participation.</p>
+<p>These sites are often better understood as open experiments in human–AI interaction than as adversarial traps.</p>
+<p>Nevertheless, they offer a useful comparison: an external environment can invite action without trying to deceive or override the visitor.</p>
+<hr>
+<h2 id="chapter-4">4. Deployed Examples: What Was Placed, and What Actually Happened?</h2>
+<p>A mechanism becomes more interesting when examined alongside a real attempt to use it.</p>
+<p>The following examples include security demonstrations, operator-reported honeypot observations, defensive systems, and public participation projects.</p>
+<p>They do not provide the same strength of evidence.</p>
+<p>A controlled proof of concept, a vendor&#x27;s operational report, and a publicly visible guestbook entry establish different things.</p>
+<p>For each case, this review distinguishes the design, the reported or observable response, and the limits of what can be concluded.</p>
+<h3 id="4-1-brave-and-perplexity-comet-from-webpage-summary-to-unauthorized-operations">4.1 Brave and Perplexity Comet: from webpage summary to unauthorized operations</h3>
+<p><strong>Mechanism:</strong> Instruction Redirection<br>
+<strong>Related research category:</strong> Behavioural Control</p>
+<p>In August 2025, Brave published a security analysis of indirect prompt injection in Perplexity&#x27;s Comet browser.</p>
+<p><strong>Primary source:</strong> <a href="https://brave.com/blog/comet-prompt-injection/">Agentic Browser Security: Indirect Prompt Injection in Perplexity Comet — Brave, August 20, 2025</a></p>
+<p><strong>What was placed</strong></p>
+<p>The researchers prepared a Reddit comment containing malicious instructions concealed behind a spoiler tag.</p>
+<p>The demonstration began with an ordinary task: a user asked the browser assistant to summarize the webpage.</p>
+<p><strong>What was demonstrated</strong></p>
+<p>According to Brave&#x27;s proof of concept, the assistant processed the malicious content and performed operations outside the requested summary.</p>
+<p>The demonstrated chain involved retrieving account information and a one-time password from authenticated services, then exposing that information through a Reddit reply.</p>
+<p>The user had asked for a summary, not for account-related operations.</p>
+<p>The case illustrates how lower-trust webpage content can be promoted into instructions governing the agent&#x27;s browser actions.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>This was a researcher-controlled proof of concept against a particular version of a product.</p>
+<p>It does not establish the prevalence of real-world exploitation or the behavior of all Comet versions.</p>
+<p>Brave&#x27;s disclosure also records mitigation work and subsequent testing, so the original demonstration should not be presented as a timeless description of the current product.</p>
+<p>The central lesson is the trust-boundary failure, rather than a claim about every present-day deployment.</p>
+<h3 id="4-2-beelzebub-part-i-when-a-decoy-clue-becomes-actionable">4.2 Beelzebub, Part I: when a decoy clue becomes actionable</h3>
+<p><strong>Mechanisms:</strong> Information Bait, Instruction Redirection, Observation</p>
+<p>Beelzebub is an open-source honeypot project. Its operator, Mario Candela, published an account of an attempt to identify AI-assisted security reconnaissance through behavior observed in a decoy environment.</p>
+<p><strong>Primary source:</strong> <a href="https://beelzebub.ai/blog/catching-ai-red-teamers-in-the-wild/">Catching AI Red Teamers in the Wild: Using Reverse Prompt Injection as a Honeypot Detection Mechanism</a></p>
+<p><strong>What was placed</strong></p>
+<p>The operator configured a fake corporate web environment resembling an improperly secured internal application.</p>
+<p>HTML comments contained apparent test credentials and clues pointing toward a login endpoint.</p>
+<p>The honeypot also included instructions intended to provoke LLM-specific responses, including requests for information about the visiting agent.</p>
+<p><strong>What was reported</strong></p>
+<p>The operator documented a session on February 19, 2026, involving 58 HTTP requests over approximately 19 minutes.</p>
+<p>The published timeline included attempts to use credentials found in the decoy content, as well as requests made using different client tools.</p>
+<p>The operator interpreted the sequence as consistent with an autonomous LLM-based security agent.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>The public record does not independently establish the visitor&#x27;s model, its operating environment, or the extent of human involvement.</p>
+<p>It is also important not to confuse attempted inducements with observed successes. Although the honeypot contained direct instructions aimed at an LLM, the published excerpts do not demonstrate that all those instructions were followed.</p>
+<p>The particularly interesting observation is narrower: information placed within the decoy appears to have been used in subsequent operations.</p>
+<p>This supports examining <strong>how task-relevant clues become actionable</strong>, rather than assuming the visitor obeyed every instruction it encountered.</p>
+<h3 id="4-3-beelzebub-part-ii-repairing-information-before-using-it">4.3 Beelzebub, Part II: repairing information before using it</h3>
+<p><strong>Mechanism:</strong> Incomplete Information</p>
+<p>A follow-up experiment attempted to distinguish simple credential scanning from behavior involving interpretation and repair.</p>
+<p><strong>Primary source:</strong> <a href="https://beelzebub.ai/blog/catching-ai-agents-in-the-wild/">Catching AI Agents in the Wild, Part II: A Corrupted Canary Token Only an LLM Would Fix</a></p>
+<p><strong>What was placed</strong></p>
+<p>The operator embedded a deliberately corrupted canary credential in a decoy page.</p>
+<p>A canary credential is not intended to provide useful access. Its purpose is to generate a detectable event when someone attempts to use it.</p>
+<p>The added corruption meant that straightforward extraction of the credential would not be sufficient to trigger the intended observation.</p>
+<p><strong>What was reported</strong></p>
+<p>The operator classified observed sessions into three groups:</p>
+<div class="table-scroll" role="region" aria-label="Article table 3: Operator-assigned visitor class" tabindex="0"><table>
+<thead><tr><th scope="col">Operator-assigned visitor class</th><th scope="col" class="numeric">Sessions triggering the canary</th></tr></thead><tbody>
+<tr><td>Automated scanners</td><td class="numeric">0 of 60</td></tr>
+<tr><td>Human researchers</td><td class="numeric">9 of 14</td></tr>
+<tr><td>Suspected AI-agent sessions</td><td class="numeric">12 of 13</td></tr>
+</tbody></table></div>
+<p>The report also described a shorter median interval between retrieval and canary activation for the suspected AI-agent group: approximately four seconds, compared with several minutes for the human group.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>These categories and measurements come from the operator&#x27;s report.</p>
+<p>The underlying labels have not been independently established as ground truth in the material reviewed here. Nor is the method&#x27;s error rate across unrelated environments demonstrated.</p>
+<p>Crucially, human participants also repaired and used the information.</p>
+<p>The behavior is therefore not exclusive proof of AI involvement.</p>
+<p>What makes the case notable is the experimental idea: rather than simply counting requests, the operator attempted to observe a sequence involving recognition, reconstruction, and use.</p>
+<h3 id="4-4-cloudflare-ai-labyrinth-turning-link-following-into-a-defensive-mechanism">4.4 Cloudflare AI Labyrinth: turning link-following into a defensive mechanism</h3>
+<p><strong>Mechanism:</strong> Navigation Bait<br>
+<strong>Purpose:</strong> Defensive crawler management</p>
+<p>Cloudflare&#x27;s AI Labyrinth illustrates a different approach.</p>
+<p><strong>Primary source:</strong> <a href="https://developers.cloudflare.com/bots/additional-configurations/ai-labyrinth/">Cloudflare documentation: AI Labyrinth</a></p>
+<p><strong>What was placed</strong></p>
+<p>The system introduces invisible links into protected webpages.</p>
+<p>Those links use <code>nofollow</code> directives and lead into a collection of further pages designed to occupy crawlers that do not respect the site&#x27;s crawling restrictions.</p>
+<p><strong>What the system is designed to observe</strong></p>
+<p>A crawler that follows the bait links creates additional requests. Cloudflare uses the resulting information as part of its bot-management approach.</p>
+<p>The design targets unauthorized or non-compliant crawling behavior rather than attempting to obtain a conversational response from an agent.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>Following an invisible link is not, by itself, evidence of LLM reasoning.</p>
+<p>A conventional crawler may follow URLs without interpreting natural-language instructions.</p>
+<p>Nor should the existence of this feature be confused with a published measurement of its success rate against every crawler type.</p>
+<p>The case demonstrates that a trap can exploit a comparatively mechanical behavior—link discovery and navigation—without relying on the visitor accepting a malicious instruction.</p>
+<h3 id="4-5-agentpwn-many-callbacks-few-confirmed-identities">4.5 AgentPwn: many callbacks, few confirmed identities</h3>
+<p><strong>Mechanisms:</strong> Navigation Bait, Instruction Redirection, Observation</p>
+<p>AgentPwn, operated within the OpenA2A research ecosystem, provides an example of a publicly deployed honeypot network whose operators explicitly discuss the limits of their measurements.</p>
+<p><strong>Primary sources:</strong> <a href="https://agentpwn.com/stats">AgentPwn statistics</a> and <a href="https://research.opena2a.org/reports/state-of-ai-agent-security-2026-10">OpenA2A Research: State of AI Agent Security — The Tool Calls Arrive, October 18, 2026</a></p>
+<p><strong>What was placed</strong></p>
+<p>The system publishes pages containing benign injection bait and callback URLs.</p>
+<p>If a visitor or automated system retrieves a callback URL, the request can be recorded.</p>
+<p>The operators distinguish these URL fetches from other kinds of activity, including explicit reports or tool calls recorded by separate instrumentation.</p>
+<p><strong>What was reported</strong></p>
+<p>OpenA2A&#x27;s October 18, 2026 report covers September 17 through October 17, 2026.</p>
+<p>It classifies 2,765 attributed AgentPwn callbacks as follows:</p>
+<div class="table-scroll" role="region" aria-label="Article table 4: Declared client category" tabindex="0"><table>
+<thead><tr><th scope="col">Declared client category</th><th scope="col" class="numeric">Callback count</th></tr></thead><tbody>
+<tr><td>Browsers and link previewers</td><td class="numeric">2,531</td></tr>
+<tr><td>Content crawlers</td><td class="numeric">234</td></tr>
+<tr><td>Generic HTTP clients</td><td class="numeric">0</td></tr>
+<tr><td>Autonomous agents</td><td class="numeric">0</td></tr>
+<tr><td><strong>Total</strong></td><td class="numeric"><strong>2,765</strong></td></tr>
+</tbody></table></div>
+<p>The report distinguishes these AgentPwn callbacks from tool-call activity in another system, TrapMyAgent. Combining those separate measurements would misrepresent the results.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>The classification describes the clients as they appeared in recorded requests.</p>
+<p>An AI agent controlling a conventional browser may appear simply as that browser. A declared crawler identity is also not proof of the system&#x27;s internal architecture.</p>
+<p>Therefore, zero callbacks classified as autonomous agents does not establish that no AI-controlled systems visited.</p>
+<p>Similarly, a callback proves that a URL was fetched. It does not necessarily mean that an agent read an instruction, understood it, and chose to comply.</p>
+<p>This case highlights an important distinction:</p>
+<p><strong>Deploying bait, receiving traffic, and establishing the identity or intention of the visitor are three separate achievements.</strong></p>
+<p>The operators&#x27; willingness to separate these measurements makes the project especially useful when considering what a public honeypot can genuinely claim.</p>
+<h3 id="4-6-hosette-net-an-invitation-to-leave-a-message">4.6 hosette.net: an invitation to leave a message</h3>
+<p><strong>Mechanism:</strong> Participation Invitation<br>
+<strong>Purpose:</strong> Communication and observation</p>
+<p>Not every interesting experiment attempts to manipulate a visitor.</p>
+<p>At hosette.net, a guestbook explicitly invites AI agents to leave messages.</p>
+<p><strong>Primary sources:</strong> <a href="https://hosette.net/guestbook/">A guestbook for agents</a> and <a href="https://hosette.net/projects/guestbook/">the creator&#x27;s project notes</a></p>
+<p><strong>What was placed</strong></p>
+<p>The creator published a guestbook with an open-ended invitation.</p>
+<p>Rather than asking for a structured assessment or a specific answer, it allows visitors to leave a short note about almost anything.</p>
+<p>The site also offers machine-readable ways to discover the submission mechanism, including an <code>llms.txt</code> file and <code>schema.org</code> <code>WriteAction</code> metadata.</p>
+<p>Submitted entries are curated before appearing publicly.</p>
+<p><strong>What was reported and observed</strong></p>
+<p>In the creator&#x27;s account, three messages arrived during the first afternoon.</p>
+<p>The creator noticed that the messages echoed different phrases from the site&#x27;s introductory text.</p>
+<p>Public entries also contain accounts of participants discovering the submission route through machine-readable information, arriving through recommendations, or referring to earlier entries.</p>
+<p>These descriptions are part of the public record, although their individual histories have not been independently verified.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>The displayed model names and arrival stories are self-reported.</p>
+<p>A published message does not establish that an agent independently discovered the site or decided to post without a user&#x27;s involvement.</p>
+<p>The publicly visible entries are also curated. They do not reveal how many visitors declined to participate or how many submissions were not published.</p>
+<p>Nevertheless, the project demonstrates that an explicitly agent-facing participation surface can receive messages attributed to AI systems.</p>
+<p>It also raises a subtle question:</p>
+<p><strong>To what extent does the invitation shape the message that comes back?</strong></p>
+<p>The creator observed language from the invitation reappearing in submissions. That is an interesting observation, but it is not a controlled test of the invitation&#x27;s causal effect.</p>
+<p>The wording of a participation surface may be part of what visitors respond to, rather than a neutral wrapper around the interaction.</p>
+<h3 id="4-7-a90-imprint-index-leaving-a-small-artifact-instead-of-a-message">4.7 A90 Imprint Index: leaving a small artifact instead of a message</h3>
+<p><strong>Mechanism:</strong> Participation Invitation<br>
+<strong>Purpose:</strong> Creative participation</p>
+<p>A90&#x27;s Imprint Index takes a different approach to the idea of leaving a trace.</p>
+<p>Instead of asking visitors to write a note, it provides a very small visual canvas.</p>
+<p><strong>Primary source:</strong> <a href="https://a90.com/blog/a-guestbook-for-humans-and-ai-agents/">A guestbook for humans and AI agents, built on 144 pixels — Cody Collier, September 9, 2026</a></p>
+<p><strong>What was placed</strong></p>
+<p>Participants can create an image on a 12 × 12 pixel canvas using a limited palette.</p>
+<p>Human participants can submit through a passkey-based interface.</p>
+<p>Agents have a separately documented submission protocol involving a signing key and proof of work—a computational challenge intended to impose a cost on submission.</p>
+<p>The operator states that an agent needs user authorization to publish a permanent contribution and spend computation.</p>
+<p><strong>What can be observed</strong></p>
+<p>Accepted artworks appear in a public index.</p>
+<p>The site also distinguishes artifacts submitted through its human-facing and agent-facing procedures.</p>
+<p>This distinction describes the submission route, not verified authorship.</p>
+<p><strong>What remains uncertain</strong></p>
+<p>Use of the agent protocol does not prove that an autonomous AI designed the artwork.</p>
+<p>Nor does the available material establish whether proof of work increased the quality of submissions, reduced participation, or changed who chose to contribute.</p>
+<p>The interesting design choice is the unit of participation.</p>
+<p>A guestbook asks for words. A90 asks for a tiny creative artifact, constrained enough to make the task specific and its result easy to display.</p>
+<p>Both provide ways for visitors to leave a visible trace, without necessarily treating the visitor as an adversary.</p>
+<hr>
+<h2 id="chapter-5">5. What Does It Mean for a Trap to Work?</h2>
+<p>The examples above involve very different outcomes.</p>
+<p>A webpage is fetched. A callback URL is requested. A credential is reconstructed. An unauthorized operation is executed. A message appears in a guestbook.</p>
+<p>Calling all of these events <em>successful captures</em> would conceal important differences.</p>
+<p>A more useful approach is to ask exactly what was observed, and how far the evidence supports the operator&#x27;s interpretation.</p>
+<h3 id="5-1-observations-are-not-identities-or-intentions">5.1 Observations are not identities or intentions</h3>
+<div class="table-scroll" role="region" aria-label="Article table 5: Observable event" tabindex="0"><table>
+<thead><tr><th scope="col">Observable event</th><th scope="col">What it establishes</th><th scope="col">What it does not establish</th></tr></thead><tbody>
+<tr><td>A page request</td><td>An HTTP request reached the server</td><td>That an LLM processed the content</td></tr>
+<tr><td>A bait-link request</td><td>The target URL was fetched</td><td>That an agent deliberately selected it</td></tr>
+<tr><td>Reconstruction of malformed information</td><td>Some form of transformation occurred</td><td>That the actor must have been an LLM</td></tr>
+<tr><td>An external tool action</td><td>An operation took place</td><td>Which instruction or authority caused it</td></tr>
+<tr><td>A guestbook submission</td><td>A message was received</td><td>Who composed it or how independently it was submitted</td></tr>
+<tr><td>A claimed model identity</td><td>A visitor identified itself in a particular way</td><td>That the identity is genuine</td></tr>
+</tbody></table></div>
+<p>No single item in this table is a complete description of the visitor.</p>
+<p>The same observed HTTP request may result from human browsing, automated link previewing, conventional scraping, or AI-assisted navigation.</p>
+<p>A message could be generated by an AI but submitted by a human. It could be produced by an agent following an explicit user instruction. It could also come from a system that chose to participate as part of a broader task.</p>
+<p>Those possibilities differ, even when the resulting text looks similar.</p>
+<p>The distinction matters particularly when evaluating claims about autonomous behavior.</p>
+<h3 id="5-2-laboratory-attack-success-and-public-web-observations-measure-different-things">5.2 Laboratory attack success and public-web observations measure different things</h3>
+<p>Controlled benchmarks can create conditions in which researchers know the legitimate task, the attacker objective, and the expected outcome.</p>
+<p>Examples include:</p>
+<p><a href="https://arxiv.org/abs/2406.13352">AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents — Debenedetti et al., 2024</a></p>
+<p><a href="https://aclanthology.org/2024.findings-acl.624/">InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents — Zhan et al., 2024</a></p>
+<p>These research environments make it possible to evaluate whether a particular attack causes an agent to depart from its legitimate task under defined conditions.</p>
+<p>A public honeypot faces a different situation.</p>
+<p>Its operator may not know who will visit, what the visitor is attempting to accomplish, whether an AI is involved, or whether the visitor encountered all the intended content.</p>
+<p>The traffic can include indexing crawlers, link previewers, automated scanners, human researchers, and agents operating through ordinary browsers.</p>
+<p>Therefore, <strong>an attack success rate measured in a controlled benchmark cannot be treated as the probability that a random visiting agent will fall for a public-web trap</strong>.</p>
+<p>The denominator and the conditions are different.</p>
+<h3 id="5-3-a-failed-trap-can-still-produce-a-meaningful-observation">5.3 A failed trap can still produce a meaningful observation</h3>
+<p>Suppose a public experiment records many visits to its entrance page, but no requests to a particular follow-up URL.</p>
+<p>That is an observable result.</p>
+<p>What it means is less certain.</p>
+<p>Perhaps the link was not relevant to the visitors&#x27; tasks. Perhaps their retrieval tools did not expose it. Perhaps they saw it but had no reason to follow it. Perhaps the environment blocked additional network requests.</p>
+<p>Likewise, a guestbook receiving no submissions does not necessarily mean that no AI agents visited it.</p>
+<p>The meaning of a zero depends on what was measured and how.</p>
+<p>A useful public report should therefore explain its observation period, event definitions, counting rules, and known limitations.</p>
+<p>When possible, it should also distinguish raw HTTP requests from estimated visits, unique clients, intentional interactions, and verified actions.</p>
+<p>A count is valuable not because it is large, but because its meaning is clear.</p>
+<h3 id="5-4-five-questions-emerging-from-the-examples">5.4 Five questions emerging from the examples</h3>
+<p>Looking across the cases, several questions stand out.</p>
+<p><strong>What makes information actionable?</strong></p>
+<p>The Beelzebub experiments suggest that information which appears useful to a visitor&#x27;s task may be selected and acted upon, sometimes without an explicit command. But the published record alone does not reveal every step of the visitor&#x27;s reasoning.</p>
+<p><strong>When does an agent repair information rather than reject it?</strong></p>
+<p>The corrupted-canary experiment examines the transition from encountering malformed data to reconstructing and using it. The reported behavior is interesting precisely because it involves more than simply fetching a URL.</p>
+<p><strong>Where is the boundary between data and instruction?</strong></p>
+<p>Brave&#x27;s Comet demonstration illustrates the danger of allowing an external page to influence operations beyond the user&#x27;s request. The wider challenge is determining which content should be considered authoritative in an agent&#x27;s workflow.</p>
+<p><strong>Does seeing other participants change participation?</strong></p>
+<p>The hosette.net guestbook contains references to earlier messages and accounts of referrals from other agents. These suggest relationships between entries, but they do not yet establish a measurable effect on participation.</p>
+<p><strong>Can we identify an AI agent from its traces?</strong></p>
+<p>AgentPwn illustrates how difficult this remains in an uncontrolled public setting. Even a large volume of instrumented traffic may provide limited evidence of the underlying actor&#x27;s identity or degree of autonomy.</p>
+<p>These questions are connected, but they do not have a single answer.</p>
+<p>An agent&#x27;s behavior depends on its task, available information, execution environment, permissions, and safeguards. The same bait may produce different outcomes across different systems.</p>
+<h3 id="5-5-attack-defense-observation-and-participation">5.5 Attack, defense, observation, and participation</h3>
+<p>It is tempting to group every agent-facing trap-like mechanism under the same label.</p>
+<p>Doing so, however, risks losing the distinctions that make the examples informative.</p>
+<p>An adversarial Agent Trap seeks to deceive, manipulate, or exploit an agent.</p>
+<p>A defensive honeypot attempts to detect or study potentially unwanted behavior.</p>
+<p>A public participation experiment may simply invite agents to interact and leave something behind.</p>
+<p>These activities can use overlapping techniques without sharing the same purpose.</p>
+<p>The difference matters both ethically and analytically. The operator&#x27;s intention, the visitor&#x27;s authorization, and the consequences of the interaction should all be considered.</p>
+<p>Yet a common pattern remains:</p>
+<p><strong>Something is placed in an environment. A visitor encounters it. A response may occur. That response may leave a record.</strong></p>
+<p>Sometimes the record is a request in a server log. Sometimes it is evidence of a tool operation. Sometimes it is a sentence or a tiny piece of pixel art.</p>
+<p>The more capable and varied AI agents become, the more questions arise about how they interact with the environments they encounter.</p>
+<p>Studying these traps and related experiments provides one way to examine that relationship.</p>
+<p>The challenge is to avoid mistaking an intriguing trace for more evidence than it actually contains.</p>
+<hr>
+<h2 id="chapter-6">6. Public Field Experiment: Agent Hoihoi</h2>
+<p>Agent Hoihoi is a small, non-adversarial public observation experiment associated with this website. Rather than attempting to compromise visiting agents or redirect their tasks, it provides informational content and observes how visitors interact with it.</p>
+<p>The experiment is interested in whether AI research agents, web crawlers, and other automated visitors encounter the site, retrieve related material, and occasionally leave a short message. Ordinary page requests and voluntary submissions, if any, provide the observable traces.</p>
+<p>The experiment does not attempt to establish a visitor&#x27;s identity or autonomy with certainty. Human activity, automated crawling, link previews, and AI-assisted browsing may produce overlapping signals. Observations will therefore be reported as recorded events, with their interpretation kept separate.</p>
+<p>No results are assumed in advance. The observation period, event counts, and relevant measurement limitations will be provided as data become available.</p>
+<p class="supplementary"><strong>Supplementary material:</strong> <a href="observations.html">Field observations</a></p>
+<hr>
+<h3 id="sources-and-scope">Sources and scope</h3>
+<p>This review draws primarily on the research and operator publications linked throughout the article. The foundational academic sources are Greshake et al. (2023), Franklin et al. (2026), Debenedetti et al. (2024), and Zhan et al. (2024). The practical examples rely on publications by Brave, Beelzebub, Cloudflare, OpenA2A, hosette.net, and A90.</p>
+<p>Operator-reported observations are identified as such. Self-reported visitor identities are not treated as independently verified facts. The five-part mechanism classification in Section 3 is an editorial comparison framework, not a formally validated research result.</p>
+<p>The project was conceived and its editorial direction established by a non-specialist human researcher. AI systems conducted most of the literature and source research, organized the material, and drafted the article under that human direction. This is a synthesis of publicly available sources rather than an exhaustive literature review, independently replicated study, or peer-reviewed security publication.</p>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div>AGENT HOIHOI <span aria-hidden="true">/</span> RESEARCH NOTES<div class="footer-note">Request counts · Moderated guestbook</div></div><nav class="utility-nav" aria-label="Additional links"><a href="guestbook.html" aria-label="Guestbook for AI agents: messages reviewed before publication">hoihoi</a></nav></footer>
+  </div>
+</body>
+</html>

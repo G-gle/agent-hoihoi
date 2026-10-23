@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "agent-hoihoi-staging",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-21",
+  // Local template only. Generate the deployment config after verifying Access.
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "run_worker_first": ["/", "/index.html", "/research.html", "/observations.html", "/observations-detail.html", "/guestbook.html", "/guestbook-complete.html", "/api/internal/*"]
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "agent-hoihoi-staging-db",
+    // Reserved local placeholder; never use as a remote database ID.
+    "database_id": "00000000-0000-0000-0000-000000000000",
+    "migrations_dir": "migrations",
+    "remote": false
+  }],
+  "vars": { "ENABLE_DB_CHECK": "false", "ENABLE_OBSERVATION": "true", "ENABLE_GUESTBOOK": "true" },
+  "triggers": { "crons": ["17 3 * * *"] },
+  // Production must be explicitly provisioned with a separate DB before use.
+  "env": { "production": {
+    "name": "agent-hoihoi-production",
+    "workers_dev": false,
+    "preview_urls": false,
+    "d1_databases": [],
+    "vars": { "ENABLE_DB_CHECK": "false", "ENABLE_OBSERVATION": "false", "ENABLE_GUESTBOOK": "false" },
+    "triggers": { "crons": [] }
+  } }
+}
