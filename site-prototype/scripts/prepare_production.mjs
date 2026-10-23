@@ -4,6 +4,7 @@ import { GUESTBOOK_PATHS } from "../src/guestbook.js";
 import { PAGE_PATHS } from "../src/observation.js";
 import { OBSERVATION_PATHS } from "../src/observation_view.js";
 import { PRODUCTION, validateTarget } from "./deployment_targets.mjs";
+import { notificationVars } from "./guestbook_notification_config.mjs";
 
 export async function prepareProduction(root, values) {
   if (values.probe || values["account-id"] !== PRODUCTION.account ||
@@ -18,7 +19,7 @@ export async function prepareProduction(root, values) {
       not_found_handling: "none", run_worker_first: [...new Set([...Object.keys(PAGE_PATHS), ...GUESTBOOK_PATHS, ...OBSERVATION_PATHS, "/api/internal/*"])] },
     d1_databases: [{ binding: "DB", database_name: PRODUCTION.database, database_id: PRODUCTION.id,
       migrations_dir: "../migrations", remote: false }],
-    vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true" },
+    vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") },
     triggers: { crons: ["17 3 * * *"] },
   };
   validateTarget(config, "production");

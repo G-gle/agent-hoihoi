@@ -92,7 +92,7 @@ writes fixed test data, reads it back, and deletes it. No visitor data is used.<
     // html_handling:none keeps .html links but does not resolve / to index.
     let response;
     try {
-      response = await handleObservation(request, env) ?? await handleGuestbook(request, env);
+      response = await handleObservation(request, env) ?? await handleGuestbook(request, env, undefined, ctx);
       if (response) {
         // Guestbook responses always pass through the Worker, including HEAD/POST.
       } else if (path === "/") {

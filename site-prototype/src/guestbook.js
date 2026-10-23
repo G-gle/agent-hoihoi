@@ -1,3 +1,5 @@
+import { scheduleGuestbookNotification } from "./guestbook_notification.js";
+
 export const LIMITS = Object.freeze({ name: 80, message: 500, bodyBytes: 8192,
   intervalSeconds: 15, list: 50, formSeconds: 1800, receiptSeconds: 600 });
 export const GUESTBOOK_PATHS = ["/guestbook.html", "/guestbook-complete.html"];
@@ -90,7 +92,7 @@ async function readForm(request) {
   return { name, message, csrf: fields.get("csrf") };
 }
 
-export async function handleGuestbook(request, env, now) {
+export async function handleGuestbook(request, env, now, ctx) {
   const path = new URL(request.url).pathname;
   if (!GUESTBOOK_PATHS.includes(path)) return null;
   if (!["GET", "HEAD", ...(path === "/guestbook.html" ? ["POST"] : [])].includes(request.method)) {
@@ -111,14 +113,16 @@ export async function handleGuestbook(request, env, now) {
       // sender must not reserve an earlier timestamp and rewind the shared gate.
       const acceptedAt = now ?? Date.now();
       const id = crypto.randomUUID();
+      const createdAt = new Date(acceptedAt).toISOString();
       // D1 batch is transactional. The insert and gate advance serialize concurrent POSTs.
       const result = await env.DB.batch([
-        env.DB.prepare(INSERT_POST).bind(id, new Date(acceptedAt).toISOString(), form.name, form.message, acceptedAt),
+        env.DB.prepare(INSERT_POST).bind(id, createdAt, form.name, form.message, acceptedAt),
         env.DB.prepare(ADVANCE_GATE).bind(acceptedAt + LIMITS.intervalSeconds * 1000, id),
       ]);
       if (result.length !== 2 || result.some(r => !r.success)) throw new Error("save failed");
       if (result[0].meta.changes === 0) return error(`Please wait ${LIMITS.intervalSeconds} seconds before trying again. This small guestbook shares one submission interval across all visitors.`, 429, { "Retry-After": String(LIMITS.intervalSeconds) });
       if (result[0].meta.changes !== 1 || result[1].meta.changes !== 1) throw new Error("save failed");
+      scheduleGuestbookNotification(ctx, env, { id, created_at: createdAt, name: form.name, message: form.message });
       return new Response(null, { status: 303, headers: { "Cache-Control": "no-store", Location: "/guestbook-complete.html",
         "Set-Cookie": setCookie(RECEIPT_COOKIE, id, LIMITS.receiptSeconds) } });
     }

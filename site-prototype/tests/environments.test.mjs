@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { STAGING, PRODUCTION, targetFor, adminTarget, validateTarget } from "../scripts/deployment_targets.mjs";
 import { buildQuery } from "../scripts/observation_admin.mjs";
+import { notificationVars } from "../scripts/guestbook_notification_config.mjs";
 
 const source = fileURLToPath(new URL("../", import.meta.url));
 const argsFor = (target, env = []) => [...env, "--url", target.url, "--account-id", target.account, "--database-id", target.id];
@@ -65,6 +66,9 @@ test("prepare retains default staging bytes and all source assets while separati
   const original = await files(path.join(root, "public"));
   assert.equal(run(root, "prepare_cloudflare.mjs", argsFor(STAGING)).status, 0);
   const stage = await files(path.join(root, ".cloudflare"));
+  const stagingConfig = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.staging.json"), "utf8"));
+  assert.deepEqual(stagingConfig.vars, { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("staging") });
+  assert.equal(stagingConfig.vars.GUESTBOOK_NOTIFY_SECRET, undefined);
   assert.equal(run(root, "prepare_cloudflare.mjs", argsFor(STAGING, ["--env", "staging"])).status, 0);
   assert.deepEqual(await files(path.join(root, ".cloudflare")), stage);
   assert.equal(run(root, "prepare_cloudflare.mjs", argsFor(PRODUCTION, ["--env", "production"])).status, 0);
@@ -86,7 +90,8 @@ test("prepare retains default staging bytes and all source assets while separati
   assert.match(Buffer.from(prod["robots.txt"], "base64").toString(), /Allow: \//);
   const config = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.production.json"), "utf8"));
   validateTarget(config, "production");
-  assert.deepEqual(config.vars, { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true" });
+  assert.deepEqual(config.vars, { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") });
+  assert.equal(config.vars.GUESTBOOK_NOTIFY_SECRET, undefined);
   assert.equal(config.preview_urls, false);
   assert.deepEqual(config.triggers.crons, ["17 3 * * *"]);
   for (const target of [{ ...PRODUCTION, id: STAGING.id }, { ...PRODUCTION, url: STAGING.url }, { ...PRODUCTION, account: "0".repeat(32) }]) {

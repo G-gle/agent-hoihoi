@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import worker from "../src/worker.js";
 import { handleGuestbook, LIMITS } from "../src/guestbook.js";
 import { adminQuery } from "../scripts/guestbook_admin.mjs";
+import { NOTIFY_TIMEOUT_MS } from "../src/guestbook_notification.js";
 
 const require = createRequire(realpathSync(fileURLToPath(new URL("../node_modules/wrangler/package.json", import.meta.url))));
 const { Miniflare, convertV4MiniflareOptions } = require("miniflare");
@@ -160,4 +161,94 @@ test("actual Worker: Guestbook GET records actual success/error, POST does not e
   await Promise.all(tasks);
   const rows = (await db.prepare("SELECT status FROM page_requests WHERE page = 'guestbook' ORDER BY id").all()).results;
   assert.deepEqual(rows, [{ status: 200 }, { status: 503 }]);
+});
+
+const notificationEnv = () => ({ ...env, GUESTBOOK_NOTIFY_URL: "https://script.google.com/macros/s/test/exec",
+  GUESTBOOK_NOTIFY_SECRET: "local-synthetic-secret-".repeat(2), GUESTBOOK_NOTIFY_ENVIRONMENT: "production" });
+test("actual Worker/D1: committed values sent once via waitUntil; response and pending privacy precede mail completion", async t => {
+  const session = await form(), tasks = [], calls = [];
+  const ctx = { waitUntil(p) { tasks.push(p); } };
+  let finish;
+  t.mock.method(console, "log", () => {});
+  t.mock.method(globalThis, "fetch", async (_url, options) => {
+    const payload = JSON.parse(options.body);
+    const row = await db.prepare("SELECT * FROM guestbook_posts WHERE id = ?").bind(payload.id).first();
+    assert.equal(row.status, "pending");
+    assert.deepEqual({ id: payload.id, created_at: payload.created_at, name: payload.name, message: payload.message },
+      { id: row.id, created_at: row.created_at, name: row.name, message: row.message });
+    assert.equal(payload.environment, "production");
+    calls.push(payload);
+    return new Promise(resolve => { finish = () => resolve(Response.json({ ok: true })); });
+  });
+  const response = await worker.fetch(post(session, { name: "  Saved name  ", message: " Saved\r\nsecond line " }), notificationEnv(), ctx);
+  assert.equal(response.status, 303); assert.equal(tasks.length, 1);
+  assert.equal(response.headers.get("location"), "/guestbook-complete.html");
+  const row = await db.prepare("SELECT * FROM guestbook_posts").first();
+  assert.equal(response.headers.get("set-cookie").split(";")[0], "__Host-hoihoi-receipt=" + row.id);
+  assert.equal(row.message, "Saved\nsecond line"); assert.equal(row.name, "Saved name");
+  assert.doesNotMatch(await (await worker.fetch(get(), notificationEnv(), ctx)).text(), /Saved name|second line/);
+  // Wait for the local primary read inside the mocked request, never for email.
+  while (!finish) await new Promise(resolve => setImmediate(resolve));
+  assert.equal(calls.length, 1); finish(); await Promise.all(tasks);
+  const receipt = get("/guestbook-complete.html", { Cookie: response.headers.get("set-cookie").split(";")[0] });
+  assert.equal((await worker.fetch(receipt, notificationEnv(), ctx)).status, 200);
+  await administer("approve", row.id); await administer("delete", row.id);
+  assert.equal(calls.length, 1); assert.equal(tasks.length, 1);
+});
+
+test("actual Worker/D1: rejected, disabled and rolled-back saves never schedule or send", async t => {
+  const session = await form(), tasks = [];
+  const ctx = { waitUntil(p) { tasks.push(p); } };
+  const fetchMock = t.mock.method(globalThis, "fetch", () => { throw new Error("must not send"); });
+  for (const [request, changed, status] of [
+    [post(session, { message: "" }), {}, 400], [post(session, { csrf: "wrong" }), {}, 403],
+    [post(session), { ENABLE_GUESTBOOK: "false" }, 503],
+  ]) assert.equal((await worker.fetch(request, { ...notificationEnv(), ...changed }, ctx)).status, status);
+  await db.prepare("UPDATE guestbook_gate SET next_allowed_at = ?").bind(Date.now() + 60000).run();
+  assert.equal((await worker.fetch(post(session), notificationEnv(), ctx)).status, 429);
+  await db.prepare("UPDATE guestbook_gate SET next_allowed_at = 0").run();
+  await db.prepare("CREATE TRIGGER notification_reject_gate BEFORE UPDATE ON guestbook_gate BEGIN SELECT RAISE(ABORT, 'private'); END").run();
+  try { assert.equal((await worker.fetch(post(session), notificationEnv(), ctx)).status, 503); }
+  finally { await db.prepare("DROP TRIGGER notification_reject_gate").run(); }
+  assert.equal((await db.prepare("SELECT count(*) AS n FROM guestbook_posts").first()).n, 0);
+  assert.equal(tasks.length, 0); assert.equal(fetchMock.mock.callCount(), 0);
+});
+
+test("actual Worker/D1: all notification failures and configuration skip retain saved post and receipt", async t => {
+  const session = await form();
+  const logs = [];
+  t.mock.method(console, "log", line => logs.push(JSON.parse(line)));
+  for (const [label, fetcher, changed, expected] of [
+    ["network", () => { throw new Error("private"); }, {}, "failed"],
+    ["HTTP", () => new Response("error", { status: 500 }), {}, "failed"],
+    ["GAS rejection", () => Response.json({ ok: false, error: "unauthorized" }), {}, "failed"],
+    ["HTML", () => new Response("<html>error</html>"), {}, "failed"],
+    ["invalid JSON", () => new Response("{"), {}, "failed"],
+    ["missing config", () => { throw new Error("must not fetch"); }, { GUESTBOOK_NOTIFY_SECRET: undefined }, "skipped"],
+  ]) {
+    await db.prepare("UPDATE guestbook_gate SET next_allowed_at = 0").run();
+    const fetchMock = t.mock.method(globalThis, "fetch", fetcher), tasks = [];
+    const response = await worker.fetch(post(session, { name: "Saved", message: label }), { ...notificationEnv(), ...changed }, { waitUntil(p) { tasks.push(p); } });
+    assert.equal(response.status, 303, label); await Promise.all(tasks);
+    const id = response.headers.get("set-cookie").split(";")[0].split("=")[1];
+    const row = await db.prepare("SELECT * FROM guestbook_posts WHERE id = ?").bind(id).first();
+    assert.equal(row.message, label); assert.equal(row.status, "pending");
+    assert.equal(logs.at(-1).result, expected);
+    assert.equal(fetchMock.mock.callCount(), expected === "skipped" ? 0 : 1);
+    fetchMock.mock.restore();
+  }
+});
+
+test("actual Worker/D1: timeout retains committed success and aborts once with no resend", async t => {
+  const session = await form(), tasks = [], logs = [];
+  t.mock.method(console, "log", line => logs.push(JSON.parse(line)));
+  const fetchMock = t.mock.method(globalThis, "fetch", () => new Promise(() => {}));
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const response = await worker.fetch(post(session), notificationEnv(), { waitUntil(p) { tasks.push(p); } });
+  assert.equal(response.status, 303); assert.equal(tasks.length, 1);
+  t.mock.timers.tick(NOTIFY_TIMEOUT_MS); await Promise.all(tasks);
+  assert.equal(fetchMock.mock.callCount(), 1);
+  assert.equal(fetchMock.mock.calls[0].arguments[1].signal.aborted, true);
+  assert.equal(logs[0].classification, "timeout_outcome_unknown");
+  assert.equal((await db.prepare("SELECT status FROM guestbook_posts").first()).status, "pending");
 });

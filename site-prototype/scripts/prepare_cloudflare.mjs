@@ -7,6 +7,7 @@ import { PAGE_PATHS } from "../src/observation.js";
 import { OBSERVATION_PATHS } from "../src/observation_view.js";
 import { prepareProduction } from "./prepare_production.mjs";
 import { rejectRepeatedOptions } from "./deployment_targets.mjs";
+import { notificationVars } from "./guestbook_notification_config.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const { values, tokens } = parseArgs({ tokens: true, options: {
@@ -68,7 +69,7 @@ if (values.probe) {
       not_found_handling: "none", run_worker_first: [...new Set([...Object.keys(PAGE_PATHS), ...GUESTBOOK_PATHS, ...OBSERVATION_PATHS, "/api/internal/*"])] },
     d1_databases: [{ binding: "DB", database_name: "agent-hoihoi-staging-db",
       database_id: db, migrations_dir: "../migrations", remote: false }],
-    vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true" },
+    vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("staging") },
     triggers: { crons: ["17 3 * * *"] },
     env: { production: { name: "agent-hoihoi-production", workers_dev: false,
       preview_urls: false, d1_databases: [], triggers: { crons: [] },
