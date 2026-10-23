@@ -5,12 +5,20 @@ import path from "node:path";
 import { GUESTBOOK_PATHS } from "../src/guestbook.js";
 import { PAGE_PATHS } from "../src/observation.js";
 import { OBSERVATION_PATHS } from "../src/observation_view.js";
+import { prepareProduction } from "./prepare_production.mjs";
+import { rejectRepeatedOptions } from "./deployment_targets.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const { values } = parseArgs({ options: {
+const { values, tokens } = parseArgs({ tokens: true, options: {
+  env: { type: "string", default: "staging" },
   url: { type: "string" }, "account-id": { type: "string" },
   "database-id": { type: "string" }, probe: { type: "boolean", default: false },
 } });
+rejectRepeatedOptions(tokens);
+if (!["staging", "production"].includes(values.env)) throw new Error("Unknown environment.");
+if (values.env === "production") {
+  await prepareProduction(root, values);
+} else {
 const account = values["account-id"];
 if (!/^[a-f0-9]{32}$/i.test(account ?? "")) {
   throw new Error("Supply the verified target --account-id (32 hexadecimal characters).");
@@ -67,4 +75,5 @@ if (values.probe) {
       vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "false", ENABLE_GUESTBOOK: "false" } } },
   }, null, 2) + "\n");
   console.log(`Prepared private staging assets for ${url.href}; source public/ and site.config.json unchanged.`);
+}
 }
