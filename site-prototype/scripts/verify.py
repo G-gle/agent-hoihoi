@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
-PAGES = {"index.html", "research.html", "about.html", "observations.html", "guestbook.html", "guestbook-complete.html", "observations-detail.html"}
+PAGES = {"index.html", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html", "observations.html", "guestbook.html", "guestbook-complete.html", "observations-detail.html"}
 
 
 class Page(HTMLParser):
@@ -101,7 +101,7 @@ def main():
                     continue
                 link = urlsplit(attrs[key])
                 if link.scheme or link.netloc:
-                    assert tag == "a" and key == "href" and link.scheme == "https" and (name == "research.html" or (name == "about.html" and attrs[key] == "https://docs.google.com/forms/d/e/1FAIpQLSeCAIDEG5HPMwmMgEgiOcwOgiO2CT1c4wQB3p3y1eV3OO7qIQ/viewform?usp=publish-editor")), f"Unexpected external dependency: {name}: {attrs[key]}"
+                    assert tag == "a" and key == "href" and link.scheme == "https" and (name in {"agent-traps.html", "agents-and-traps.html"} or (name == "about.html" and attrs[key] == "https://docs.google.com/forms/d/e/1FAIpQLSeCAIDEG5HPMwmMgEgiOcwOgiO2CT1c4wQB3p3y1eV3OO7qIQ/viewform?usp=publish-editor")), f"Unexpected external dependency: {name}: {attrs[key]}"
                     continue
                 target = (PUBLIC / unquote(link.path)).resolve() if link.path else PUBLIC / name
                 assert target.is_relative_to(PUBLIC.resolve()) and target.is_file(), f"Broken link: {name}: {attrs[key]}"
@@ -109,10 +109,15 @@ def main():
                     destination = parsed.get(target.name)
                     assert destination and unquote(link.fragment) in destination.ids, f"Broken fragment: {attrs[key]}"
                 internal_count += 1
-    checks.append(f"7 HTML pages: titles/layout landmarks, English language and {internal_count} local references checked")
+    checks.append(f"9 HTML pages: titles/layout landmarks, English language and {internal_count} local references checked")
     checks.append("Every primary nav: Home / Research / About only; footer hoihoi is the sole utility anchor and leads to Guestbook")
     assert not any(t == "a" and a.get("href") == "observations.html" for t, a in parsed["index.html"].elements)
-    routes = [("research.html", "observations.html"), ("index.html", "guestbook.html"), ("observations.html", "guestbook.html"), ("guestbook-complete.html", "observations-detail.html")]
+    routes = [("agent-traps.html", "observations.html"), ("agents-and-traps.html", "observations.html"), ("index.html", "guestbook.html"), ("observations.html", "guestbook.html"), ("guestbook-complete.html", "observations-detail.html")]
+    for name in ["research.html", "agent-traps.html", "agents-and-traps.html"]:
+        assert parsed[name].main_links[1].get("aria-current") == "page", name
+    for name in ["index.html", "research.html"]:
+        for target in ["agent-traps.html", "agents-and-traps.html"]:
+            assert any(t == "a" and a.get("href") == target for t, a in parsed[name].elements), (name, target)
     for source, target in routes:
         assert any(t == "a" and a.get("href") == target for t, a in parsed[source].elements), (source, target)
     for name, page in parsed.items():
@@ -126,7 +131,7 @@ def main():
     original = ROOT.parents[1] / "AIAgentTraps20261021.md"
     if original.exists():
         assert source_path.read_bytes() == original.read_bytes(), "Source copy differs from the supplied manuscript"
-    research = parsed["research.html"]
+    research = parsed["agent-traps.html"]
     assert manuscript_text(source) == " ".join("".join(research.article_text).split()), "Article text was omitted, reordered, or changed"
     expected_links = Counter(re.findall(r"\]\((https://[^)]+)\)", source))
     actual_links = Counter(a["href"] for t, a in research.elements if t == "a" and a.get("href", "").startswith("https://"))
@@ -134,7 +139,7 @@ def main():
     assert len([t for t, _ in research.elements if t == "h2"]) == 6
     assert len([t for t, _ in research.elements if t == "table"]) == 5
     assert all(f"chapter-{n}" in research.ids for n in range(1, 7)) and "sources-and-scope" in research.ids
-    article_html = (PUBLIC / "research.html").read_text(encoding="utf-8")
+    article_html = (PUBLIC / "agent-traps.html").read_text(encoding="utf-8")
     assert article_html.count('href="observations.html"') == 1
     assert article_html.index('id="chapter-6"') < article_html.index('href="observations.html"') < article_html.index('id="sources-and-scope"')
     assert 'class="supplementary"' in article_html and "FIELD_OBSERVATIONS_URL" not in article_html
@@ -154,14 +159,14 @@ def main():
     config = json.loads((ROOT / "site.config.json").read_text(encoding="utf-8"))
     urls = [node.text for node in ET.parse(PUBLIC / "sitemap.xml").findall("{*}url/{*}loc")]
     valid_bases = [b.rstrip("/") + "/" for b in [config["localBaseUrl"], config["publicBaseUrl"]] if b]
-    assert any(urls == [base, base + "research.html", base + "about.html"] for base in valid_bases), urls
+    assert any(urls == [base, *[base + page for page in ["research.html", "agent-traps.html", "agents-and-traps.html", "about.html"]]] for base in valid_bases), urls
     llms = (PUBLIC / "llms.txt").read_text(encoding="utf-8")
-    for target in ["index.html", "research.html", "about.html", "observations.html", "guestbook.html"]:
+    for target in ["index.html", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html", "observations.html", "guestbook.html"]:
         assert f"]({target})" in llms
     assert "observations-detail.html" not in llms and "guestbook-complete.html" not in llms
     assert "pending administrator approval" in llms and "JavaScript is not required" in llms
     assert not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", llms)
-    checks.append("robots allows all; sitemap contains only 3 normal pages; llms describes both entry points and moderated guestbook")
+    checks.append("robots allows all; sitemap contains 5 normal pages; llms describes the research index, both articles, entry points and moderated guestbook")
     if args.url:
         base = args.url.rstrip("/") + "/"
         count = 0

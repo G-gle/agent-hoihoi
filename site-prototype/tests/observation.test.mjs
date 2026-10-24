@@ -46,7 +46,7 @@ test("GET-only exact path scope, actual statuses, receipt UTC, stop switch and p
     assert.match(last[0], /^\d{4}-\d\d-\d\dT.*Z$/);
   }
   const before = events.length;
-  for (const path of ["/about.html", "/observations-detail.html", "/guestbook-complete.html", "/assets/style.css",
+  for (const path of ["/about.html", "/agent-traps.html", "/agents-and-traps.html", "/observations-detail.html", "/guestbook-complete.html", "/assets/style.css",
     "/llms.txt", "/robots.txt", "/sitemap.xml", "/research", "/index", "/missing", "/research.html/"]) {
     await worker.fetch(req(path), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response("asset") } }, context());
   }

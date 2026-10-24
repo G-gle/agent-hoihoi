@@ -25,11 +25,11 @@ export async function prepareProduction(root, values) {
   validateTarget(config, "production");
   await mkdir(assets, { recursive: true });
   await cp(path.join(root, "public"), assets, { recursive: true });
-  const urls = ["", "research.html", "about.html"].map(page =>
+  const urls = ["", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page =>
     `  <url><loc>${new URL(page, PRODUCTION.url).href}</loc></url>`).join("\n");
   await writeFile(path.join(assets, "sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
-  // Environment annotation only. Keep the five discovery links and all site copy.
+  // Environment annotation only. Keep the seven discovery links and all site copy.
   const stagingNote = "The current staging site remains protected by Cloudflare Access. Public launch is a separate step.";
   const llms = await readFile(path.join(assets, "llms.txt"), "utf8");
   if (llms.split(stagingNote).length !== 2) throw new Error("Review the changed llms environment annotation before preparing production.");

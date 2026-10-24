@@ -55,7 +55,8 @@ h1, h2, h3 { font-weight: 500; }
 .section-heading h2 { font: 500 24px/1.6 var(--serif); margin: 0; }
 .section-heading .label { font-size: 10px; color: var(--muted); }
 .note-list { border-top: 1px solid var(--line); }
-.note-row { display: grid; grid-template-columns: 58px 1fr auto; gap: 22px; padding: 25px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.note-row, .research-entry { display: grid; grid-template-columns: 58px 1fr auto; gap: 22px; }
+.note-row { padding: 25px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); }
 .note-row:hover { text-decoration: none; }
 .note-row:hover h3 { color: var(--blue); text-decoration: underline; text-underline-offset: 6px; }
 .note-number { font: 12px/2 var(--mono); color: var(--muted); padding-top: 3px; }
@@ -203,7 +204,8 @@ h1, h2, h3 { font-weight: 500; }
   .section { padding: 35px 0; }
   .section-heading h2 { font-size: 22px; }
   .section-heading .label { font-size: 9px; }
-  .note-row { grid-template-columns: 25px 1fr 14px; gap: 13px; padding-block: 22px; }
+  .note-row, .research-entry { grid-template-columns: 25px 1fr 14px; gap: 13px; }
+  .note-row { padding-block: 22px; }
   .note-row h3 { font-size: 17px; }
   .note-row p { font-size: 11px; }
   .about-strip { align-items: start; flex-direction: column; gap: 14px; padding-bottom: 33px; }

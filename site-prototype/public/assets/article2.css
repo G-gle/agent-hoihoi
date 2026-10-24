@@ -1,0 +1,23 @@
+/* Additions apply only to the standalone second article. */
+.article2 #for-visiting-agents { padding-top: 0; margin-bottom: 0; }
+.article2 .agent-invitation { margin: 0 0 18px; }
+.article2 .agent-invitation summary {
+  display: block;
+  width: fit-content;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--ink);
+}
+.article2 .agent-invitation summary::-webkit-details-marker { display: none; }
+.article2 .agent-invitation summary::marker { content: ""; }
+.article2 .agent-invitation summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 5px; }
+.article2 .agent-invitation[open] summary { margin-bottom: 18px; }
+.article2 ol { padding-left: 23px; color: var(--muted); font-size: 15px; line-height: 1.85; }
+@media (max-width: 600px) {
+  .article2 .agent-invitation summary { font-size: 13px; }
+  .article2 ol { font-size: 14px; }
+}

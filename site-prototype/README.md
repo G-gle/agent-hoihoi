@@ -1,3 +1,12 @@
+## 2026年10月24日：Research一覧と2本の記事（公開済み）
+
+Researchは `public/research.html` の一覧から、第1弾 `public/agent-traps.html` と第2弾 `public/agents-and-traps.html` へ進む構成です。Homeからも両記事に直接進めます。第1弾の生成先は `agent-traps.html` に変更し、現行フッターを保持しています。一覧の「01」「02」はHomeと共通の番号・グリッド指定を使います。stagingで確認後、本番へ反映済みです。
+
+- [公開URL・配信Version・確認結果・保持した設定](RESEARCH_RELEASE_20261024.md)
+- [組み込み時点の変更ファイル・確認結果・プレビュー方法](RESEARCH_INTEGRATION.md)
+
+以下の過去記録にある「research.htmlが第1弾全文」「7ページ」「sitemap 3 URL」は今回の一覧化前の構成です。
+
 ## 2026年10月23日：全文版v2の反映（ローカルレビュー）
 
 Home下段、Aboutの本文と指定2文の視覚的非表示、Guestbook、受領成功文、観測概要・詳細を全文版v2に合わせました。Researchと既存Worker／D1処理を維持し、staging・本番へは未デプロイです。

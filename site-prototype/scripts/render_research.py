@@ -12,7 +12,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "content" / "AIAgentTraps20261021.md"
-OUTPUT = ROOT / "public" / "research.html"
+OUTPUT = ROOT / "public" / "agent-traps.html"
 TITLE = "AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations"
 INLINE = re.compile(r"`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)|\*\*(.+?)\*\*|\*([^*]+)\*")
 
@@ -111,6 +111,7 @@ def render_page(source):
       <nav class="main-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="research.html" aria-current="page">Research</a><a href="about.html">About</a></nav>
     </header>
     <main id="main">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href="research.html">Research</a><span aria-current="page">Research note 01</span></nav>
       <div class="page-intro research-intro"><p class="eyebrow">RESEARCH NOTE / 01</p></div>
       <div class="article-layout">
         <nav class="toc" aria-label="Article contents"><p class="label">CONTENTS</p>
@@ -128,7 +129,7 @@ def render_page(source):
         </article>
       </div>
     </main>
-    <footer class="site-footer"><div>AGENT HOIHOI <span aria-hidden="true">/</span> RESEARCH NOTES<div class="footer-note">Request counts · Moderated guestbook</div></div><nav class="utility-nav" aria-label="Additional links"><a href="guestbook.html" aria-label="Guestbook for people and AI agents: messages reviewed before publication">hoihoi</a></nav></footer>
+    <footer class="site-footer"><div>AGENT HOIHOI <span aria-hidden="true">/</span> RESEARCH NOTES<div class="footer-note">Request counts · Moderated guestbook</div></div><nav class="utility-nav" aria-label="Additional links"><a href="guestbook.html" aria-label="Guestbook for AI agents: messages reviewed before publication">hoihoi</a></nav></footer>
   </div>
 </body>
 </html>
@@ -137,16 +138,16 @@ def render_page(source):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--check", action="store_true", help="Fail if research.html differs from the rendered source")
+    parser.add_argument("--check", action="store_true", help="Fail if agent-traps.html differs from the rendered source")
     args = parser.parse_args()
     rendered = render_page(SOURCE.read_text(encoding="utf-8"))
     if args.check:
         if OUTPUT.read_text(encoding="utf-8") != rendered:
-            parser.exit(1, "research.html is out of date. Run scripts/render_research.py.\n")
-        print("PASS: research.html exactly matches the complete source rendering.")
+            parser.exit(1, "agent-traps.html is out of date. Run scripts/render_research.py.\n")
+        print("PASS: agent-traps.html exactly matches the complete source rendering.")
     else:
         OUTPUT.write_text(rendered, encoding="utf-8")
-        print("Rendered the complete review, six chapters, and Sources and scope to research.html.")
+        print("Rendered the complete review, six chapters, and Sources and scope to agent-traps.html.")
 
 
 if __name__ == "__main__":

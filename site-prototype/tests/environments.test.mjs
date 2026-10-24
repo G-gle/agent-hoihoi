@@ -81,12 +81,12 @@ test("prepare retains default staging bytes and all source assets while separati
     if (!["sitemap.xml", "llms.txt"].includes(name)) assert.equal(prod[name], data, name);
   }
   const sitemap = Buffer.from(prod["sitemap.xml"], "base64").toString();
-  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), [PRODUCTION.url, PRODUCTION.url + "research.html", PRODUCTION.url + "about.html"]);
+  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), [PRODUCTION.url, ...["research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page => PRODUCTION.url + page)]);
   const llms = Buffer.from(prod["llms.txt"], "base64").toString();
   const expected = Buffer.from(original["llms.txt"], "base64").toString().replace(
     "The current staging site remains protected by Cloudflare Access. Public launch is a separate step.", `Production site: ${PRODUCTION.url}`);
   assert.equal(llms, expected);
-  assert.equal((llms.match(/^- \[/gm) ?? []).length, 5);
+  assert.equal((llms.match(/^- \[/gm) ?? []).length, 7);
   assert.match(Buffer.from(prod["robots.txt"], "base64").toString(), /Allow: \//);
   const config = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.production.json"), "utf8"));
   validateTarget(config, "production");

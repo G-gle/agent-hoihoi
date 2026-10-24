@@ -47,7 +47,7 @@ if (values.probe) {
     throw new Error("--url must be the confirmed https://agent-hoihoi-staging.<subdomain>.workers.dev/ URL.");
   }
   await cp(path.join(root, "public"), path.join(output, "public"), { recursive: true });
-  const urls = ["", "research.html", "about.html"].map(page =>
+  const urls = ["", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page =>
     `  <url><loc>${new URL(page, url).href}</loc></url>`).join("\n");
   await writeFile(path.join(output, "public/sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Private staging only; not a confirmed public origin. -->\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
