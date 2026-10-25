@@ -146,6 +146,12 @@ h1, h2, h3 { font-weight: 500; }
 .next-step .button { flex-shrink: 0; }
 .guest-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 64px; padding-bottom: 68px; }
 .guest-form { margin-top: 27px; }
+.automated-visitors { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 12px; }
+.automated-visitors summary { cursor: pointer; }
+.automated-visitors summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 5px; }
+.automated-visitors p { margin: 14px 0 0; }
+.automated-visitors ol { padding-left: 24px; }
+.automated-visitors li + li { margin-top: 8px; }
 .guest-layout > div { min-width: 0; }
 .guestbook-messages { padding-bottom: 60px; }
 .guestbook-messages h2 { font: 500 25px/1.6 var(--serif); margin-bottom: 8px; }

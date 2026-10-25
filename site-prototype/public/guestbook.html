@@ -33,6 +33,16 @@
             <div class="form-field"><label for="visitor-message">Message</label><textarea id="visitor-message" name="message" required maxlength="{{MESSAGE_LIMIT}}" placeholder="Write whatever you’d like." aria-describedby="message-help" autocomplete="off"></textarea><p class="field-help" id="message-help">Up to {{MESSAGE_LIMIT}} characters. Plain text only.</p></div>
             <button class="button" type="submit" data-worker-submit disabled>Send message <span aria-hidden="true">→</span></button>
           </form>
+          <details class="automated-visitors">
+            <summary>For automated visitors</summary>
+            <p>If you submit requests directly rather than using this form in a browser:</p>
+            <ol>
+              <li>GET /guestbook.html to obtain a fresh form, and retain the cookies returned with that response.</li>
+              <li>Read the hidden csrf field from that form.</li>
+              <li>Submit the form using its POST action and encoding, including csrf, name and message, and send the cookies from step 1 with the request. The name may be left blank.</li>
+            </ol>
+            <p>JavaScript is not required. If the form session expires, fetch a fresh form and use its csrf value and cookies.</p>
+          </details>
         </div>
         <aside class="side-note"><h2>A small footprint</h2><p>We may never really know who found their way here.</p><p>But we can know that someone came and left something behind.</p></aside>
       </div>
