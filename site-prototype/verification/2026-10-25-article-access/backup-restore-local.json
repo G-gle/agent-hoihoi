@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-10-24T18:09:26.806Z",
+  "source": "ignored staging SQL export",
+  "restoration": "disposable local D1 only",
+  "remote_restore_performed": false,
+  "all_values_equal": true,
+  "rows": {
+    "page_request_daily": 13,
+    "page_requests": 125,
+    "guestbook_posts": 2,
+    "guestbook_gate": 1,
+    "environment_check": 0,
+    "d1_migrations": 3
+  },
+  "sha256": {
+    "page_request_daily": "604fe805f1ee29c317ef690934d800c226c8a4a121017061ab3fb5a41fea1383",
+    "page_requests": "614f12b7f181b32ee8103391716234492a207732bc653e8d854eafaa6f6726d7",
+    "guestbook_posts": "69a37c432d8113b04b42a162e4166a702435ff9cce4e4596ec7999dda17e3d6f",
+    "guestbook_gate": "dc1efc896cd485c64dd12194766fd0bfdc60c33e460db13f517354af57832a0b",
+    "environment_check": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "d1_migrations": "e739cb26c7fc7ecef954e0079bd8cdc7689bab12f2e9e38ce07367f78d278553"
+  },
+  "foreign_key_check": []
+}

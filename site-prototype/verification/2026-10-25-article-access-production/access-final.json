@@ -1,0 +1,262 @@
+{
+  "checkedAt": "2026-10-25T02:10:58.464Z",
+  "authentication": "no cookies or authorization headers",
+  "base": "https://agent-hoihoi-staging.molamola.workers.dev/",
+  "results": [
+    {
+      "path": "/",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/index.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/index.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/research.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/research.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/agent-traps.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/agent-traps.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/agents-and-traps.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/agents-and-traps.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/about.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/about.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/observations.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/observations.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/guestbook.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/guestbook.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/guestbook-complete.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/guestbook-complete.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/observations-detail.html",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/observations-detail.html",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/assets/style.css",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/assets/style.css",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/assets/guestbook.js",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/assets/guestbook.js",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/assets/favicon.svg",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/assets/favicon.svg",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/llms.txt",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/llms.txt",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/robots.txt",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/robots.txt",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/sitemap.xml",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/sitemap.xml",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "path": "/api/internal/db-check",
+      "method": "GET",
+      "accessProtected": true,
+      "chain": [
+        {
+          "url": "https://agent-hoihoi-staging.molamola.workers.dev/api/internal/db-check",
+          "status": 302
+        },
+        {
+          "url": "https://calm-dawn-a023.cloudflareaccess.com/cdn-cgi/access/login/agent-hoihoi-staging.molamola.workers.dev",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

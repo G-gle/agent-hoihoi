@@ -13,17 +13,20 @@ export const SNAPSHOT_SQL = `WITH instant AS (
     SUM(CASE WHEN page = 'home' THEN requests ELSE 0 END) AS home,
     SUM(CASE WHEN page = 'research' THEN requests ELSE 0 END) AS research,
     SUM(CASE WHEN page = 'observations' THEN requests ELSE 0 END) AS observations,
-    SUM(CASE WHEN page = 'guestbook' THEN requests ELSE 0 END) AS guestbook
+    SUM(CASE WHEN page = 'guestbook' THEN requests ELSE 0 END) AS guestbook,
+    SUM(CASE WHEN page = 'agent_traps' THEN requests END) AS agent_traps,
+    SUM(CASE WHEN page = 'agents_and_traps' THEN requests END) AS agents_and_traps
   FROM page_request_daily
-  WHERE page IN ('home', 'research', 'observations', 'guestbook') GROUP BY day
+  WHERE page IN ('home', 'research', 'observations', 'guestbook', 'agent_traps', 'agents_and_traps') GROUP BY day
 )
 SELECT 'summary' AS kind, MIN(day) AS first_day, MAX(day) AS last_day,
   COALESCE(SUM(home), 0) AS home, COALESCE(SUM(research), 0) AS research,
   COALESCE(SUM(observations), 0) AS observations, COALESCE(SUM(guestbook), 0) AS guestbook,
+  SUM(agent_traps) AS agent_traps, SUM(agents_and_traps) AS agents_and_traps,
   retrieved_at, start_day, end_day, NULL AS day
 FROM clock LEFT JOIN days ON 1 = 1
 UNION ALL
-SELECT 'daily', NULL, NULL, home, research, observations, guestbook,
+SELECT 'daily', NULL, NULL, home, research, observations, guestbook, agent_traps, agents_and_traps,
   retrieved_at, start_day, end_day, day FROM days CROSS JOIN clock
 WHERE day BETWEEN start_day AND end_day ORDER BY kind DESC, day DESC`;
 
@@ -35,8 +38,10 @@ export async function readSnapshot(db, clock = "now") {
   return { summary, days: result.results.filter(row => row.kind === "daily") };
 }
 
-const labels = { home: "Home", research: "Research", observations: "Field observations", guestbook: "Guestbook" };
+const labels = { home: "Home", research: "Research", observations: "Field observations", guestbook: "Guestbook",
+  agent_traps: "Article 1: Agent traps", agents_and_traps: "Article 2: Agents and traps" };
 const number = value => Number(value).toLocaleString("en-US");
+const count = (value, daily = false) => value == null ? (daily ? "—" : "No retained records") : number(value);
 const time = value => escapeHTML(value.replace("T", " ").replace("Z", " UTC"));
 
 function render(snapshot, state, detail) {
@@ -56,9 +61,11 @@ function render(snapshot, state, detail) {
 <dl class="definition-list"><div><dt>First confirmed record date</dt><dd>${escapeHTML(s.first_day)} UTC<small>Oldest retained daily aggregate; the original activation time is not established.</small></dd></div>
 <div><dt>Cumulative coverage</dt><dd>${escapeHTML(s.first_day)} through ${escapeHTML(s.last_day)} UTC<small>All retained daily aggregates. This is not evidence of continuous or complete recording; pauses, failed writes and deleted test records can leave gaps.</small></dd></div>
 <div><dt>Retrieved at</dt><dd>${time(s.retrieved_at)}<small>Totals and daily rows come from one database snapshot.</small></dd></div></dl>
-<h3 class="details-heading">Cumulative requests by page</h3><dl class="definition-list">${Object.entries(labels).map(([key, label]) => `<div><dt>${label}</dt><dd data-count="${key}">${number(s[key])}</dd></div>`).join("")}</dl>
+<h3 class="details-heading">Cumulative requests by page</h3><dl class="definition-list">${Object.entries(labels).map(([key, label]) => `<div><dt>${label}</dt><dd data-count="${key}">${count(s[key])}</dd></div>`).join("")}</dl>
+<p class="panel-caption">Separate article counts cover requests recorded since this feature was enabled, with no historical backfill. Research totals refer to /research.html, including Article 1 before that URL became the research index.</p>
 <h3 class="details-heading">Daily requests</h3><p>Last 30 UTC calendar dates, inclusive: ${escapeHTML(s.start_day)} through ${escapeHTML(s.end_day)}. Cumulative counts above include all retained dates.</p>
-<div class="observation-table" role="region" aria-label="Daily request counts; scroll horizontally if needed" tabindex="0"><table><caption>Recorded UTC dates only</caption><thead><tr><th scope="col">UTC date</th>${Object.values(labels).map(label => `<th scope="col">${label}</th>`).join("")}</tr></thead><tbody>${days.map(row => `<tr><th scope="row">${escapeHTML(row.day)}</th>${Object.keys(labels).map(key => `<td>${number(row[key])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+<div class="observation-table" role="region" aria-label="Daily request counts; scroll horizontally if needed" tabindex="0"><table><caption>Recorded UTC dates only</caption><thead><tr><th scope="col">UTC date</th>${Object.values(labels).map(label => `<th scope="col">${label}</th>`).join("")}</tr></thead><tbody>${days.map(row => `<tr><th scope="row">${escapeHTML(row.day)}</th>${Object.keys(labels).map(key => `<td>${count(row[key], true)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+<p class="panel-caption">An article dash (—) means no retained count, not a measured zero. It can include dates before separate article recording began; neither a dash nor the first record establishes activation time.</p>
 <p class="panel-caption">${days.length ? "Missing dates are omitted, not filled with zeros." : "No recorded dates in this display range."} A zero cell means no retained count for that page on a date with other recorded requests; it does not prove uninterrupted measurement.</p></section>`;
 }
 

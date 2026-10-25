@@ -1,0 +1,786 @@
+{
+  "verified_at": "2026-10-25T02:09:37.691Z",
+  "base_head": "5330dd9bd06772ab44ea724eb70ec1786852f1e7",
+  "branch": "implement-v1",
+  "source_manifest_sha256": "6794533b000706a8a547f92131e0dee03197a499a339340e7065f347c54a204a",
+  "deployable_source_hashes": {
+    "src/guestbook.js": "6a2fb01db7394f7bb86323d344db188667c07281d6620b3dd49e4842819614dd",
+    "src/guestbook_notification.js": "5483353aaa0516a01633e7b4004f32f0a2aba2a7fb4bb76622ebf435b5673734",
+    "src/observation.js": "c91d301751f72ed4d86bdbfd65be71587451bdac370d59e3c2ed709aa0402e25",
+    "src/observation_view.js": "373ff4e28764ae95f26ff3e4cc09436e21e5986bd2895cc800d6cad99bbe0abd",
+    "src/probe.js": "e7a0e08dde6dc1c330b05a4fef3ed3df9420130427da521d9672366bd705f52b",
+    "src/worker.js": "5caa228517cb82008caf9abdd6be56d25e51c4598905f3cd83d522beefccc68d",
+    "public/about.html": "14e0a8887cafcbdd3f3fc3b5e16f68620817151738671378d4559e596e79c163",
+    "public/agent-traps.html": "7fd753be11b501cc438d7b5d95c4f8981d8eec3c915d72a45c2ead821c42d35e",
+    "public/agents-and-traps.html": "943fa8f885f7352bf15877ed29f88c58f7729a252cf047822997e40d6d153be1",
+    "public/assets/article2.css": "4c0134f6fa5e7ff4b491070fe3f2f996378057df0e799d195cf46393a431401a",
+    "public/assets/favicon.svg": "f4ce311888767d3f80cde899a6420bffc81ddc0079af2622c66d220323dd9173",
+    "public/assets/guestbook.js": "9a7e30f9c2e1aed6b08a8827ff4f5e090d10a05ba2553944468e10f0e5481cd5",
+    "public/assets/style.css": "9b00ef130e04c6da2ee12fc140d4a0d8cd1accd079b64139dd6cdba8954ba8dc",
+    "public/guestbook-complete.html": "f8c6195f2ce62951f5a9139134ed565f6f8aba050003d49325735687331e389d",
+    "public/guestbook.html": "7c77fe6269d09ba10927780c73101cebbcac94f3d398978459b268a51fa48121",
+    "public/index.html": "8513cdc386ec661e911011d6bffe9f7d50032a7afe1ef28b3e435bdb0682a62b",
+    "public/llms.txt": "d3203655653c200a8a7ed2cd45ac8395c993ef09132d2b0e1b698f0d26a1061d",
+    "public/observations-detail.html": "354909e39296837971e0650499aa5bfda6a046f70487c52221ce3d32b7ebf39d",
+    "public/observations.html": "64a8fbedddf1b5c6f91bc01f3df1d2ba8b894e41ef983e162759ffacd671d6d7",
+    "public/research.html": "7834582b090d80b173c88c5051cd26de2bec497a2c7091df9b7b5e1e217210b5",
+    "public/robots.txt": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95",
+    "public/sitemap.xml": "ccb96a8bd91d1089737d24fd31f8ad6c442f1f74d665254ff8fda39cff88080c",
+    "migrations/0001_environment_check.sql": "0bff44ad71c361a2147a7416c80b1950763b710e3c77022a250a93f72c3a812d",
+    "migrations/0002_page_requests.sql": "1001e91cd4fe399ca0b9e6e7089e7dcd67407b9d831f2e3acbfefaff2ab2c39a",
+    "migrations/0003_guestbook.sql": "9aea89b08c9789f19f8e1ac18c9aeae095bcb46086d86d76004b63738c8eb348",
+    "migrations/0004_article_page_requests.sql": "f1166b9dab0b5d4a532dd144c10ff43f31f17cf2d2981c64d4739eca2054d4cf",
+    "package.json": "07ccf7a7788ef84b26e16e80052ff6c1d5e5b50e1c275ac24f0e9e8a678634a8",
+    "pnpm-lock.yaml": "efb1c79385f0c205cf452d81d418e71dc922bac672e61bd4a5270b0aef58d81a",
+    "scripts/prepare_cloudflare.mjs": "345d665b10f73934ebcd876ee36e9303903f927d9d3397629a72b524fd41f1ed",
+    "scripts/prepare_production.mjs": "c5d6b4e7dd7a7884969ea5beb2678e01b1d0b21ff03c3f18e2c9d881f177447d",
+    "scripts/deployment_targets.mjs": "d7ef4f1a24bc1a4188a6fc32b9c40d292425c5b7b759a548bf525a3be27a1c30",
+    "scripts/guestbook_notification_config.mjs": "d6896f46bce82a3ec152650e64221d7bbeb7de7a8ee896655204ea31b10d44bc",
+    ".cloudflare/wrangler.production.json": "ffeb1f2444d195c965a12ecf6212e5f768aef6160bf8e3221abbfd65de7eb180"
+  },
+  "production_before": {
+    "version": [
+      {
+        "version_id": "eecf89df-22c5-49c7-8f19-503136ab5d2d",
+        "percentage": 100
+      }
+    ],
+    "deployment_id": "ff7775aa-3cdd-4eb2-be30-fd5d4202c511",
+    "created_on": "2026-10-24T12:44:08.282044Z",
+    "script_etag": "7cfe87fa2cbe147fad08182233a65621b3e963904381fef5b459cd5bd6900f3d",
+    "runtime": {
+      "assets": {
+        "html_handling": "none",
+        "not_found_handling": "none",
+        "static_routing": {
+          "user_worker": [
+            "/",
+            "/index.html",
+            "/research.html",
+            "/observations.html",
+            "/guestbook.html",
+            "/guestbook-complete.html",
+            "/observations-detail.html",
+            "/api/internal/*"
+          ]
+        },
+        "serve_directly": true,
+        "raw_run_worker_first": [
+          "/",
+          "/index.html",
+          "/research.html",
+          "/observations.html",
+          "/guestbook.html",
+          "/guestbook-complete.html",
+          "/observations-detail.html",
+          "/api/internal/*"
+        ],
+        "base_path": "/"
+      },
+      "compatibility_date": "2026-10-21",
+      "usage_model": "standard"
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "database_id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+        "id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "ENABLE_DB_CHECK",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_GUESTBOOK",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_OBSERVATION",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_ENVIRONMENT",
+        "text": "production",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_URL",
+        "type": "plain_text",
+        "value_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a"
+      }
+    ],
+    "subdomain": {
+      "enabled": true,
+      "previews_enabled": false
+    }
+  },
+  "production_after": {
+    "version": [
+      {
+        "version_id": "f717fdb7-dbd7-494a-900d-2c6dda6859b5",
+        "percentage": 100
+      }
+    ],
+    "deployment_id": "fdcdf6fb-3546-450d-8aa7-72fcc70a5d79",
+    "created_on": "2026-10-25T01:40:56.007596Z",
+    "script_etag": "98c182da1ddfd667f870a33392488700c8df032c58681db6418b4e0a3a45dbcc",
+    "runtime": {
+      "assets": {
+        "html_handling": "none",
+        "not_found_handling": "none",
+        "static_routing": {
+          "user_worker": [
+            "/",
+            "/index.html",
+            "/research.html",
+            "/observations.html",
+            "/guestbook.html",
+            "/agent-traps.html",
+            "/agents-and-traps.html",
+            "/guestbook-complete.html",
+            "/observations-detail.html",
+            "/api/internal/*"
+          ]
+        },
+        "serve_directly": true,
+        "raw_run_worker_first": [
+          "/",
+          "/index.html",
+          "/research.html",
+          "/observations.html",
+          "/guestbook.html",
+          "/agent-traps.html",
+          "/agents-and-traps.html",
+          "/guestbook-complete.html",
+          "/observations-detail.html",
+          "/api/internal/*"
+        ],
+        "base_path": "/"
+      },
+      "compatibility_date": "2026-10-21",
+      "usage_model": "standard"
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "database_id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+        "id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "ENABLE_DB_CHECK",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_GUESTBOOK",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_OBSERVATION",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_ENVIRONMENT",
+        "text": "production",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_URL",
+        "type": "plain_text",
+        "value_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a"
+      }
+    ],
+    "subdomain": {
+      "enabled": true,
+      "previews_enabled": false
+    }
+  },
+  "staging_before": {
+    "version": [
+      {
+        "version_id": "5f570559-affe-4e7e-9565-3d175319b84a",
+        "percentage": 100
+      }
+    ],
+    "deployment_id": "fb5fcf31-2842-4063-9af2-5c3a2796b871",
+    "created_on": "2026-10-24T18:06:36.36783Z",
+    "script_etag": "98c182da1ddfd667f870a33392488700c8df032c58681db6418b4e0a3a45dbcc",
+    "runtime": {
+      "assets": {
+        "html_handling": "none",
+        "not_found_handling": "none",
+        "static_routing": {
+          "user_worker": [
+            "/",
+            "/index.html",
+            "/research.html",
+            "/observations.html",
+            "/guestbook.html",
+            "/agent-traps.html",
+            "/agents-and-traps.html",
+            "/guestbook-complete.html",
+            "/observations-detail.html",
+            "/api/internal/*"
+          ]
+        },
+        "serve_directly": true,
+        "raw_run_worker_first": [
+          "/",
+          "/index.html",
+          "/research.html",
+          "/observations.html",
+          "/guestbook.html",
+          "/agent-traps.html",
+          "/agents-and-traps.html",
+          "/guestbook-complete.html",
+          "/observations-detail.html",
+          "/api/internal/*"
+        ],
+        "base_path": "/"
+      },
+      "compatibility_date": "2026-10-21",
+      "usage_model": "standard"
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "database_id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+        "id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "ENABLE_DB_CHECK",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_GUESTBOOK",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_OBSERVATION",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_ENVIRONMENT",
+        "text": "staging",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_URL",
+        "type": "plain_text",
+        "value_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a"
+      }
+    ],
+    "subdomain": {
+      "enabled": true,
+      "previews_enabled": false
+    }
+  },
+  "staging_after": {
+    "version": [
+      {
+        "version_id": "5f570559-affe-4e7e-9565-3d175319b84a",
+        "percentage": 100
+      }
+    ],
+    "deployment_id": "fb5fcf31-2842-4063-9af2-5c3a2796b871",
+    "created_on": "2026-10-24T18:06:36.36783Z",
+    "script_etag": "98c182da1ddfd667f870a33392488700c8df032c58681db6418b4e0a3a45dbcc",
+    "runtime": {
+      "assets": {
+        "html_handling": "none",
+        "not_found_handling": "none",
+        "static_routing": {
+          "user_worker": [
+            "/",
+            "/index.html",
+            "/research.html",
+            "/observations.html",
+            "/guestbook.html",
+            "/agent-traps.html",
+            "/agents-and-traps.html",
+            "/guestbook-complete.html",
+            "/observations-detail.html",
+            "/api/internal/*"
+          ]
+        },
+        "serve_directly": true,
+        "raw_run_worker_first": [
+          "/",
+          "/index.html",
+          "/research.html",
+          "/observations.html",
+          "/guestbook.html",
+          "/agent-traps.html",
+          "/agents-and-traps.html",
+          "/guestbook-complete.html",
+          "/observations-detail.html",
+          "/api/internal/*"
+        ],
+        "base_path": "/"
+      },
+      "compatibility_date": "2026-10-21",
+      "usage_model": "standard"
+    },
+    "bindings": [
+      {
+        "name": "ASSETS",
+        "type": "assets"
+      },
+      {
+        "database_id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+        "id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+        "name": "DB",
+        "type": "d1"
+      },
+      {
+        "name": "ENABLE_DB_CHECK",
+        "text": "false",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_GUESTBOOK",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "ENABLE_OBSERVATION",
+        "text": "true",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_ENVIRONMENT",
+        "text": "staging",
+        "type": "plain_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "GUESTBOOK_NOTIFY_URL",
+        "type": "plain_text",
+        "value_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a"
+      }
+    ],
+    "subdomain": {
+      "enabled": true,
+      "previews_enabled": false
+    }
+  },
+  "before_snapshot_summary": {
+    "database_utc": "2026-10-25T01:36:52.806Z",
+    "rows": {
+      "page_request_daily": 8,
+      "page_requests": 66,
+      "guestbook_posts": 1,
+      "guestbook_gate": 1,
+      "environment_check": 0,
+      "d1_migrations": 3
+    },
+    "sha256": {
+      "page_request_daily": "7729fcebb715e3f2c9c3d4c3673e7f86b46cf3c0551e9cb6f44251b3257b1d32",
+      "page_requests": "d5eccf9dbaabfd8390e0e7b9a90ee28e0df9e6224b807141032d57a95f03ee1f",
+      "guestbook_posts": "eba402c49e3458c6fbd3ae570ceb55f9e9f2f2b6f89cfa639d6cba3710ec292b",
+      "guestbook_gate": "a477b4963eb932646ef5aea2c2e23d88c712afcc7667505b3e2ab506c9c3cdc8",
+      "environment_check": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "d1_migrations": "8ff9d4b7294a128343789f55a7ef952598b8403158890a986f90fb98526cd624"
+    }
+  },
+  "after_migration_snapshot_summary": {
+    "database_utc": "2026-10-25T01:39:58.538Z",
+    "rows": {
+      "page_request_daily": 8,
+      "page_requests": 66,
+      "guestbook_posts": 1,
+      "guestbook_gate": 1,
+      "environment_check": 0,
+      "d1_migrations": 4
+    },
+    "sha256": {
+      "page_request_daily": "7729fcebb715e3f2c9c3d4c3673e7f86b46cf3c0551e9cb6f44251b3257b1d32",
+      "page_requests": "d5eccf9dbaabfd8390e0e7b9a90ee28e0df9e6224b807141032d57a95f03ee1f",
+      "guestbook_posts": "eba402c49e3458c6fbd3ae570ceb55f9e9f2f2b6f89cfa639d6cba3710ec292b",
+      "guestbook_gate": "a477b4963eb932646ef5aea2c2e23d88c712afcc7667505b3e2ab506c9c3cdc8",
+      "environment_check": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "d1_migrations": "0c4505b48171895b8a650e20950243ac6228a0fd90e519e702bbe72f401b319d"
+    }
+  },
+  "after_verification_snapshot_summary": {
+    "database_utc": "2026-10-25T02:09:33.840Z",
+    "rows": {
+      "page_request_daily": 11,
+      "page_requests": 69,
+      "guestbook_posts": 1,
+      "guestbook_gate": 1,
+      "environment_check": 0,
+      "d1_migrations": 4
+    },
+    "sha256": {
+      "page_request_daily": "3466c2ab258ab635f1f74899b1b32ab90b0605005ec5e7f451cf5336f332265c",
+      "page_requests": "65d18b3bfca96293d31d26ed349305b419a8dfb52b3ecf5f535f317de4bb5e75",
+      "guestbook_posts": "eba402c49e3458c6fbd3ae570ceb55f9e9f2f2b6f89cfa639d6cba3710ec292b",
+      "guestbook_gate": "a477b4963eb932646ef5aea2c2e23d88c712afcc7667505b3e2ab506c9c3cdc8",
+      "environment_check": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "d1_migrations": "0c4505b48171895b8a650e20950243ac6228a0fd90e519e702bbe72f401b319d"
+    }
+  },
+  "migration": {
+    "started_at": "2026-10-25T01:39:49.3567134Z",
+    "completed_at": "2026-10-25T01:39:53.4766538Z",
+    "exit_code": 0
+  },
+  "deployment": {
+    "started_at": "2026-10-25T01:40:47.2039922Z",
+    "completed_at": "2026-10-25T01:40:58.6534846Z",
+    "exit_code": 0
+  },
+  "backup": {
+    "checked_at": "2026-10-25T01:38:32.328Z",
+    "sql_bytes": 19808,
+    "sql_sha256": "acfc84073e0581a3999710cd310ed1f45154dfa4efd7575b7d8ca038c0565b52",
+    "utf8_readable": true,
+    "disposable_memory_sqlite_import": true,
+    "saved_snapshot_all_values_equal": true,
+    "rows": {
+      "page_request_daily": 8,
+      "page_requests": 66,
+      "guestbook_posts": 1,
+      "guestbook_gate": 1,
+      "environment_check": 0,
+      "d1_migrations": 3
+    },
+    "foreign_key_check": [],
+    "bookmark_obtained": true,
+    "conservative_time_travel_days": 7,
+    "paid_plan_time_travel_days": 30,
+    "actual_plan_not_assumed": true,
+    "remote_restore_performed": false,
+    "d1_limits_source": "https://developers.cloudflare.com/d1/platform/limits/",
+    "backup_source": "https://developers.cloudflare.com/d1/reference/time-travel/"
+  },
+  "migration_schema": [
+    {
+      "type": "index",
+      "name": "page_requests_received_at",
+      "tbl_name": "page_requests",
+      "sql": "CREATE INDEX page_requests_received_at ON page_requests(received_at)"
+    },
+    {
+      "type": "index",
+      "name": "sqlite_autoindex_page_request_daily_1",
+      "tbl_name": "page_request_daily",
+      "sql": null
+    },
+    {
+      "type": "table",
+      "name": "page_request_daily",
+      "tbl_name": "page_request_daily",
+      "sql": "CREATE TABLE \"page_request_daily\" (\n  day TEXT NOT NULL CHECK (day GLOB '????-??-??'),\n  page TEXT NOT NULL CHECK (page IN ('home', 'research', 'observations', 'guestbook', 'agent_traps', 'agents_and_traps')),\n  requests INTEGER NOT NULL CHECK (requests >= 1),\n  PRIMARY KEY (day, page)\n)"
+    },
+    {
+      "type": "table",
+      "name": "page_requests",
+      "tbl_name": "page_requests",
+      "sql": "CREATE TABLE \"page_requests\" (\n  id INTEGER PRIMARY KEY,\n  received_at TEXT NOT NULL,\n  day TEXT NOT NULL CHECK (day = substr(received_at, 1, 10)),\n  page TEXT NOT NULL,\n  status INTEGER NOT NULL CHECK (status BETWEEN 100 AND 599),\n  user_agent TEXT CHECK (length(user_agent) <= 512),\n  referrer_domain TEXT CHECK (length(referrer_domain) <= 253),\n  FOREIGN KEY (day, page) REFERENCES \"page_request_daily\"(day, page) ON DELETE CASCADE\n)"
+    }
+  ],
+  "foreign_key_check": [],
+  "foreign_keys": [
+    {
+      "id": 0,
+      "seq": 0,
+      "table": "page_request_daily",
+      "from": "day",
+      "to": "day",
+      "on_update": "NO ACTION",
+      "on_delete": "CASCADE",
+      "match": "NONE"
+    },
+    {
+      "id": 0,
+      "seq": 1,
+      "table": "page_request_daily",
+      "from": "page",
+      "to": "page",
+      "on_update": "NO ACTION",
+      "on_delete": "CASCADE",
+      "match": "NONE"
+    }
+  ],
+  "indexes": [
+    {
+      "seq": 0,
+      "name": "page_requests_received_at",
+      "unique": 0,
+      "origin": "c",
+      "partial": 0
+    }
+  ],
+  "migration_existing_values_preserved": {
+    "all_saved_raw_values_equal": true,
+    "all_saved_post_values_equal": true,
+    "gate_preserved_or_new_post_explained": true,
+    "old_migration_rows_equal": true,
+    "daily_increments_reconciled_with_new_raw": true,
+    "new_post_count": 0,
+    "added_raw": [],
+    "daily_deltas": []
+  },
+  "final_existing_values_preserved": {
+    "all_saved_raw_values_equal": true,
+    "all_saved_post_values_equal": true,
+    "gate_preserved_or_new_post_explained": true,
+    "old_migration_rows_equal": true,
+    "daily_increments_reconciled_with_new_raw": true,
+    "new_post_count": 0,
+    "added_raw": [
+      {
+        "id": 67,
+        "received_at": "2026-10-25T01:40:57.914Z",
+        "day": "2026-10-25",
+        "page": "home",
+        "status": 200
+      },
+      {
+        "id": 68,
+        "received_at": "2026-10-25T01:41:44.102Z",
+        "day": "2026-10-25",
+        "page": "agent_traps",
+        "status": 200
+      },
+      {
+        "id": 69,
+        "received_at": "2026-10-25T01:41:47.812Z",
+        "day": "2026-10-25",
+        "page": "agents_and_traps",
+        "status": 200
+      }
+    ],
+    "daily_deltas": [
+      {
+        "key": "2026-10-25/agent_traps",
+        "requests": 1
+      },
+      {
+        "key": "2026-10-25/agents_and_traps",
+        "requests": 1
+      },
+      {
+        "key": "2026-10-25/home",
+        "requests": 1
+      }
+    ]
+  },
+  "article_gets": [
+    {
+      "pathname": "/agent-traps.html",
+      "requests_sent": 1,
+      "status": 200,
+      "started_at": "2026-10-25T01:41:44.013Z",
+      "completed_at": "2026-10-25T01:41:44.273Z",
+      "verification_record": {
+        "id": 68,
+        "received_at": "2026-10-25T01:41:44.102Z",
+        "day": "2026-10-25",
+        "page": "agent_traps",
+        "status": 200
+      },
+      "daily_increase": 1
+    },
+    {
+      "pathname": "/agents-and-traps.html",
+      "requests_sent": 1,
+      "status": 200,
+      "started_at": "2026-10-25T01:41:47.709Z",
+      "completed_at": "2026-10-25T01:41:47.958Z",
+      "verification_record": {
+        "id": 69,
+        "received_at": "2026-10-25T01:41:47.812Z",
+        "day": "2026-10-25",
+        "page": "agents_and_traps",
+        "status": 200
+      },
+      "daily_increase": 1
+    }
+  ],
+  "detail_gets": {
+    "browser": 1,
+    "supplemental_http": 1,
+    "status": 200,
+    "extra_http_reason": "Supplemental status verification because the browser API does not expose navigation performance/status",
+    "recorded_increase": 0,
+    "counts": {
+      "home": "26",
+      "research": "11",
+      "observations": "5",
+      "guestbook": "25",
+      "agent_traps": "1",
+      "agents_and_traps": "1"
+    }
+  },
+  "access": {
+    "before_checked_at": "2026-10-25T01:36:47.203Z",
+    "after_checked_at": "2026-10-25T02:10:58.464Z",
+    "paths_each_run": 17,
+    "all_protected": true
+  },
+  "browser": {
+    "layouts": [
+      {
+        "articleDashCells": 4,
+        "counts": [
+          {
+            "page": "home",
+            "value": "26"
+          },
+          {
+            "page": "research",
+            "value": "11"
+          },
+          {
+            "page": "observations",
+            "value": "5"
+          },
+          {
+            "page": "guestbook",
+            "value": "25"
+          },
+          {
+            "page": "agent_traps",
+            "value": "1"
+          },
+          {
+            "page": "agents_and_traps",
+            "value": "1"
+          }
+        ],
+        "documentWidth": 375,
+        "headers": [
+          "UTC date",
+          "Home",
+          "Research",
+          "Field observations",
+          "Guestbook",
+          "Article 1: Agent traps",
+          "Article 2: Agents and traps"
+        ],
+        "notes": [
+          "Separate article counts cover requests recorded since this feature was enabled, with no historical backfill. Research totals refer to /research.html, including Article 1 before that URL became the research index.",
+          "An article dash (—) means no retained count, not a measured zero. It can include dates before separate article recording began; neither a dash nor the first record establishes activation time.",
+          "Missing dates are omitted, not filled with zeros. A zero cell means no retained count for that page on a date with other recorded requests; it does not prove uninterrupted measurement."
+        ],
+        "regionWidth": 335,
+        "rows": 3,
+        "tableWidth": 800,
+        "url": "https://agent-hoihoi-production.molamola.workers.dev/observations-detail.html",
+        "width": 390
+      },
+      {
+        "articleDashCells": 4,
+        "counts": [
+          {
+            "page": "home",
+            "value": "26"
+          },
+          {
+            "page": "research",
+            "value": "11"
+          },
+          {
+            "page": "observations",
+            "value": "5"
+          },
+          {
+            "page": "guestbook",
+            "value": "25"
+          },
+          {
+            "page": "agent_traps",
+            "value": "1"
+          },
+          {
+            "page": "agents_and_traps",
+            "value": "1"
+          }
+        ],
+        "documentWidth": 1265,
+        "headers": [
+          "UTC date",
+          "Home",
+          "Research",
+          "Field observations",
+          "Guestbook",
+          "Article 1: Agent traps",
+          "Article 2: Agents and traps"
+        ],
+        "notes": [
+          "Separate article counts cover requests recorded since this feature was enabled, with no historical backfill. Research totals refer to /research.html, including Article 1 before that URL became the research index.",
+          "An article dash (—) means no retained count, not a measured zero. It can include dates before separate article recording began; neither a dash nor the first record establishes activation time.",
+          "Missing dates are omitted, not filled with zeros. A zero cell means no retained count for that page on a date with other recorded requests; it does not prove uninterrupted measurement."
+        ],
+        "regionWidth": 1080,
+        "rows": 3,
+        "tableWidth": 1080,
+        "url": "https://agent-hoihoi-production.molamola.workers.dev/observations-detail.html",
+        "width": 1280
+      }
+    ],
+    "keyboard": {
+      "focus": true,
+      "scrollLeft": 40
+    }
+  },
+  "tests": {
+    "saved_node": {
+      "total": 45,
+      "pass": 44,
+      "known_F01": 1
+    },
+    "saved_python": {
+      "pass": 93
+    },
+    "rerun": false,
+    "reason": "Deployable code, migration and dependency versions unchanged from verified staging; saved serial and independent D1 evidence reviewed",
+    "miniflare_intermittent_issue_not_claimed_resolved": true
+  },
+  "source_identical_to_verified_staging": true,
+  "rollback_performed": false,
+  "remote_database_restore_performed": false,
+  "trial_posts_or_emails_sent": false,
+  "private_backups_and_images_excluded_from_git": true
+}

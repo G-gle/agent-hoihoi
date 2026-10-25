@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-10-24T16:24:50.412Z",
+  "wrangler": "4.151.3",
+  "location": "local only",
+  "migration_sha256": "f1166b9dab0b5d4a532dd144c10ff43f31f17cf2d2981c64d4739eca2054d4cf",
+  "cases": {
+    "empty": {
+      "all_four_applied": true,
+      "foreign_key_check": []
+    },
+    "existing": {
+      "preserved_daily_rows": 5,
+      "preserved_raw_rows": 4,
+      "preserved_raw_ids": [
+        7,
+        19,
+        42,
+        103
+      ],
+      "all_values_equal": true,
+      "before_hashes": [
+        "86e66d7635ccb154faef1f52185b68e7f117fda129b7da3aa1d4ede8b98fd37e",
+        "1b106b1d03171fe41b80d80c8adfa5805a448269336086c1735883ae20621178",
+        "216760a9fc5a4412ba94b87950d09bf50e9e087a0e0d7480c1cde38c87bad3b3",
+        "84751b2a76919d7f3c38fa566c2bc8962d3a7b8b3f5ad5ec437b4b9f9b69a1fc",
+        "8315847660fdf14a5b4e49b3bbc7ba6ba2900f775e3d71dd547fb9265dd641bd"
+      ],
+      "after_hashes": [
+        "86e66d7635ccb154faef1f52185b68e7f117fda129b7da3aa1d4ede8b98fd37e",
+        "1b106b1d03171fe41b80d80c8adfa5805a448269336086c1735883ae20621178",
+        "216760a9fc5a4412ba94b87950d09bf50e9e087a0e0d7480c1cde38c87bad3b3",
+        "84751b2a76919d7f3c38fa566c2bc8962d3a7b8b3f5ad5ec437b4b9f9b69a1fc",
+        "8315847660fdf14a5b4e49b3bbc7ba6ba2900f775e3d71dd547fb9265dd641bd"
+      ],
+      "includes_aggregate_without_raw": true,
+      "posts_gate_environment_unchanged": true,
+      "foreign_key_check": [],
+      "foreign_keys": [
+        {
+          "id": 0,
+          "seq": 0,
+          "table": "page_request_daily",
+          "from": "day",
+          "to": "day",
+          "on_update": "NO ACTION",
+          "on_delete": "CASCADE",
+          "match": "NONE"
+        },
+        {
+          "id": 0,
+          "seq": 1,
+          "table": "page_request_daily",
+          "from": "page",
+          "to": "page",
+          "on_update": "NO ACTION",
+          "on_delete": "CASCADE",
+          "match": "NONE"
+        }
+      ],
+      "indexes": [
+        [
+          {
+            "seq": 0,
+            "name": "page_requests_received_at",
+            "unique": 0,
+            "origin": "c",
+            "partial": 0
+          }
+        ],
+        [
+          {
+            "seq": 0,
+            "name": "sqlite_autoindex_page_request_daily_1",
+            "unique": 1,
+            "origin": "pk",
+            "partial": 0
+          }
+        ]
+      ],
+      "legacy_snapshot_and_writes": true,
+      "new_page_writes_and_management": true,
+      "cascade_verified": true
+    },
+    "failure": {
+      "late_failure_rolled_back_all_rows_schema_indexes_and_marker": true,
+      "retry_succeeded": true,
+      "foreign_key_check": []
+    }
+  },
+  "completed_at": "2026-10-24T16:27:15.142Z"
+}

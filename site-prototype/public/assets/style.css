@@ -246,7 +246,7 @@ h1, h2, h3 { font-weight: 500; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 .observation-table { max-width: 100%; overflow-x: auto; margin: 24px 0 12px; }
-.observation-table table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13px; }
+.observation-table table { border-collapse: collapse; width: 100%; min-width: 800px; font-size: 13px; overflow-wrap: normal; }
 .observation-table caption { text-align: left; color: var(--muted); padding-bottom: 12px; }
 .observation-table th, .observation-table td { border-bottom: 1px solid var(--line); padding: 12px; text-align: right; }
 .observation-table th:first-child { text-align: left; white-space: nowrap; }

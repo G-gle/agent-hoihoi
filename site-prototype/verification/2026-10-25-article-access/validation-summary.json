@@ -1,0 +1,26 @@
+{
+  "reviewed_at": "2026-10-25T02:12:14.190Z",
+  "node": {
+    "total": 45,
+    "pass": 44,
+    "known_failure": "F-01: static receipt success text",
+    "command": "node --test --test-concurrency=1 tests/*.test.mjs"
+  },
+  "python": {
+    "pass": 93
+  },
+  "miniflare": {
+    "intermittent_native_hydration_failures_observed": 2,
+    "subsequent_isolated_pass": 4,
+    "subsequent_serial_pass": 44,
+    "root_cause_not_claimed_resolved": true
+  },
+  "independent_paths": {
+    "wrangler_empty_and_existing_migrations": true,
+    "late_failure_atomic_rollback": true,
+    "http_and_d1": true,
+    "staging_exact_test_gets": 8,
+    "staging_saved_values_preserved": true
+  },
+  "raw_logs_post_bodies_and_images_omitted": true
+}

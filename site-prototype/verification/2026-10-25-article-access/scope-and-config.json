@@ -1,0 +1,130 @@
+{
+  "checked_at": "2026-10-24T18:15:04.514Z",
+  "head": "5330dd9bd06772ab44ea724eb70ec1786852f1e7",
+  "branch": "implement-v1",
+  "remote_ahead_behind": "0\t0",
+  "preserved_public_files": [
+    {
+      "path": "public/about.html",
+      "sha256": "14e0a8887cafcbdd3f3fc3b5e16f68620817151738671378d4559e596e79c163"
+    },
+    {
+      "path": "public/agent-traps.html",
+      "sha256": "7fd753be11b501cc438d7b5d95c4f8981d8eec3c915d72a45c2ead821c42d35e"
+    },
+    {
+      "path": "public/agents-and-traps.html",
+      "sha256": "943fa8f885f7352bf15877ed29f88c58f7729a252cf047822997e40d6d153be1"
+    },
+    {
+      "path": "public/assets/article2.css",
+      "sha256": "4c0134f6fa5e7ff4b491070fe3f2f996378057df0e799d195cf46393a431401a"
+    },
+    {
+      "path": "public/assets/favicon.svg",
+      "sha256": "f4ce311888767d3f80cde899a6420bffc81ddc0079af2622c66d220323dd9173"
+    },
+    {
+      "path": "public/assets/guestbook.js",
+      "sha256": "9a7e30f9c2e1aed6b08a8827ff4f5e090d10a05ba2553944468e10f0e5481cd5"
+    },
+    {
+      "path": "public/guestbook-complete.html",
+      "sha256": "f8c6195f2ce62951f5a9139134ed565f6f8aba050003d49325735687331e389d"
+    },
+    {
+      "path": "public/guestbook.html",
+      "sha256": "7c77fe6269d09ba10927780c73101cebbcac94f3d398978459b268a51fa48121"
+    },
+    {
+      "path": "public/index.html",
+      "sha256": "8513cdc386ec661e911011d6bffe9f7d50032a7afe1ef28b3e435bdb0682a62b"
+    },
+    {
+      "path": "public/observations.html",
+      "sha256": "64a8fbedddf1b5c6f91bc01f3df1d2ba8b894e41ef983e162759ffacd671d6d7"
+    },
+    {
+      "path": "public/research.html",
+      "sha256": "7834582b090d80b173c88c5051cd26de2bec497a2c7091df9b7b5e1e217210b5"
+    },
+    {
+      "path": "public/robots.txt",
+      "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95"
+    },
+    {
+      "path": "public/sitemap.xml",
+      "sha256": "ccb96a8bd91d1089737d24fd31f8ad6c442f1f74d665254ff8fda39cff88080c"
+    }
+  ],
+  "configurations": {
+    "staging": {
+      "worker": "agent-hoihoi-staging",
+      "database_id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+      "run_worker_first": [
+        "/",
+        "/index.html",
+        "/research.html",
+        "/observations.html",
+        "/guestbook.html",
+        "/agent-traps.html",
+        "/agents-and-traps.html",
+        "/guestbook-complete.html",
+        "/observations-detail.html",
+        "/api/internal/*"
+      ],
+      "flags": {
+        "ENABLE_DB_CHECK": "false",
+        "ENABLE_OBSERVATION": "true",
+        "ENABLE_GUESTBOOK": "true"
+      },
+      "notification_environment": "staging",
+      "notification_url_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a",
+      "preview_urls": false,
+      "crons": [
+        "17 3 * * *"
+      ]
+    },
+    "production": {
+      "worker": "agent-hoihoi-production",
+      "database_id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+      "run_worker_first": [
+        "/",
+        "/index.html",
+        "/research.html",
+        "/observations.html",
+        "/guestbook.html",
+        "/agent-traps.html",
+        "/agents-and-traps.html",
+        "/guestbook-complete.html",
+        "/observations-detail.html",
+        "/api/internal/*"
+      ],
+      "flags": {
+        "ENABLE_DB_CHECK": "false",
+        "ENABLE_OBSERVATION": "true",
+        "ENABLE_GUESTBOOK": "true"
+      },
+      "notification_environment": "production",
+      "notification_url_sha256": "baef44fab78ecf773953cf03c5433bf507e77186dce3afabb5ada89444e3633a",
+      "preview_urls": false,
+      "crons": [
+        "17 3 * * *"
+      ]
+    }
+  },
+  "unchanged_tracked_files": [
+    "src/worker.js",
+    "scripts/prepare_cloudflare.mjs",
+    "scripts/prepare_production.mjs",
+    "scripts/observation_admin.mjs",
+    "scripts/guestbook_admin.mjs",
+    "migrations/0001_environment_check.sql",
+    "migrations/0002_page_requests.sql",
+    "migrations/0003_guestbook.sql"
+  ],
+  "migration_sha256": "f1166b9dab0b5d4a532dd144c10ff43f31f17cf2d2981c64d4739eca2054d4cf",
+  "production_deployed": false,
+  "committed": false,
+  "pushed": false
+}

@@ -4,17 +4,17 @@ import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
-const { values } = parseArgs({ options: { url: { type: "string" }, out: { type: "string" } } });
+const { values } = parseArgs({ options: { url: { type: "string" }, out: { type: "string" }, "get-only": { type: "boolean", default: false } } });
 const base = new URL(values.url);
 assert.equal(base.protocol, "https:");
 assert(base.hostname.endsWith(".workers.dev"));
 assert(!base.username && !base.password && !base.search && !base.hash);
-const paths = ["", "index.html", "research.html", "about.html", "observations.html", "guestbook.html",
+const paths = ["", "index.html", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html", "observations.html", "guestbook.html",
   "guestbook-complete.html", "observations-detail.html", "assets/style.css", "assets/guestbook.js",
   "assets/favicon.svg", "llms.txt", "robots.txt", "sitemap.xml"];
 const safeURL = url => { const safe = new URL(url); return safe.origin + safe.pathname; };
 const results = [];
-for (const [relative, originalMethod] of [...paths.map(p => [p, "GET"]), ["api/internal/db-check", "POST"], ["guestbook.html", "POST"]]) {
+for (const [relative, originalMethod] of [...paths.map(p => [p, "GET"]), ...(values["get-only"] ? [["api/internal/db-check", "GET"]] : [["api/internal/db-check", "POST"], ["guestbook.html", "POST"]])]) {
   let url = new URL(relative, base);
   let method = originalMethod;
   const chain = [];

@@ -19,7 +19,7 @@ test("durable totals, single UTC snapshot, 30-day bounds, omitted missing dates,
   const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: "export default {fetch(){return new Response('test')}}", compatibilityDate: "2026-10-21", d1Databases: ["DB"] }));
   try {
     const db = await mf.getD1Database("DB");
-    for (const migration of ["0001_environment_check.sql", "0002_page_requests.sql", "0003_guestbook.sql"]) {
+    for (const migration of ["0001_environment_check.sql", "0002_page_requests.sql", "0003_guestbook.sql", "0004_article_page_requests.sql"]) {
       const sql = (await readFile(new URL("../migrations/" + migration, import.meta.url), "utf8")).replace(/--[^\n]*/g, "").split(";").map(s => s.trim().replace(/\s+/g, " ")).filter(Boolean);
       for (const statement of sql) await db.prepare(statement).run();
     }
@@ -27,6 +27,9 @@ test("durable totals, single UTC snapshot, 30-day bounds, omitted missing dates,
     const unmeasuredHTML = await (await handleObservation(request("/observations.html"), env)).text();
     assert.match(unmeasuredHTML, /Not measured/);
     assert.doesNotMatch(unmeasuredHTML, /Something seems to have stopped by|data-count=/);
+    const unmeasuredDetail = await (await handleObservation(request("/observations-detail.html"), env)).text();
+    assert.match(unmeasuredDetail, /data-observation-state="unmeasured"/);
+    assert.doesNotMatch(unmeasuredDetail, /data-count=/);
     for (const [day, page, n] of [["2020-01-01", "home", 100], ["2026-09-21", "research", 7], ["2026-09-22", "research", 3], ["2026-10-20", "observations", 4], ["2026-10-21", "guestbook", 9]]) {
       await db.prepare("INSERT INTO page_request_daily VALUES (?, ?, ?)").bind(day, page, n).run();
     }
@@ -36,6 +39,8 @@ test("durable totals, single UTC snapshot, 30-day bounds, omitted missing dates,
     assert.equal(after.summary.research, 10);
     assert.equal(after.summary.observations, 4);
     assert.equal(after.summary.guestbook, 9);
+    assert.equal(after.summary.agent_traps, null);
+    assert.equal(after.summary.agents_and_traps, null);
     assert.equal(after.summary.first_day, "2020-01-01");
     assert.equal(after.summary.retrieved_at, "2026-10-21T00:00:00.000Z");
     assert.equal(before.summary.start_day, "2026-09-21");
@@ -55,6 +60,25 @@ test("durable totals, single UTC snapshot, 30-day bounds, omitted missing dates,
     assert.equal(detail.headers.get("x-robots-tag"), "noindex");
     const html = await detail.text();
     assert.match(html, /data-count="home">100</);
+    assert.match(html, /data-count="agent_traps">No retained records</);
+    assert.match(html, /data-count="agents_and_traps">No retained records</);
+    assert.match(html, /Article 1: Agent traps/);
+    assert.match(html, /Article 2: Agents and traps/);
+    assert.match(html, /including Article 1 before that URL became the research index/);
+    assert.match(html, /not a measured zero/);
+    assert.match(html, /<td>—<\/td>/);
+    assert.match(html, /role="region"[^>]*tabindex="0"/);
+    for (const [day, page, n] of [["2026-09-21", "agent_traps", 12], ["2026-09-22", "agent_traps", 2], ["2026-10-21", "agents_and_traps", 5]]) {
+      await db.prepare("INSERT INTO page_request_daily VALUES (?, ?, ?)").bind(day, page, n).run();
+    }
+    const articles = await readSnapshot(db, "2026-10-21T00:00:00.000Z");
+    assert.equal(articles.summary.agent_traps, 14);
+    assert.equal(articles.summary.agents_and_traps, 5);
+    assert.equal(articles.days.reduce((sum, row) => sum + (row.agent_traps ?? 0), 0), 2);
+    assert.equal(articles.days.find(row => row.day === "2026-10-20").agent_traps, null);
+    const articleHTML = await (await handleObservation(request("/observations-detail.html"), env)).text();
+    assert.match(articleHTML, /data-count="agent_traps">14</);
+    assert.match(articleHTML, /data-count="agents_and_traps">5</);
     assert.doesNotMatch(html, /PRIVATE_NAME|PRIVATE_MESSAGE|private-id/);
     assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests").first()).n, 0);
     // Other aggregate rows prove recording existed; this selected page can be zero.
@@ -84,11 +108,13 @@ test("paused, missing DB, query failure and empty aggregates remain distinct and
     [{ ENABLE_OBSERVATION: "true", DB: { withSession() { throw new Error("PRIVATE_SQL"); } } }, "Temporarily unavailable"],
     [{ ENABLE_OBSERVATION: "true", DB: { withSession() { return { prepare() { return { bind() { return { all: async () => ({ success: false }) }; } }; } }; } } }, "Temporarily unavailable"],
   ]) {
-    const res = await handleObservation(request("/observations.html"), { ...env, ASSETS: assets });
+    for (const path of ["/observations.html", "/observations-detail.html"]) {
+    const res = await handleObservation(request(path), { ...env, ASSETS: assets });
     assert.equal(res.status, 200);
     const html = await res.text();
     assert.ok(html.includes(expected));
     assert.match(html, /href="guestbook.html"/);
     assert.doesNotMatch(html, /data-count=|PRIVATE_SQL|Something seems to have stopped by/);
+    }
   }
 });

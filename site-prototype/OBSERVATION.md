@@ -19,6 +19,10 @@ CloudflareダッシュボードでサブドメインとAccessのAll traffic保�
 | `/research.html` | `research` |
 | `/observations.html` | `observations` |
 | `/guestbook.html` | `guestbook` |
+| `/agent-traps.html` | `agent_traps` |
+| `/agents-and-traps.html` | `agents_and_traps` |
+
+2026-10-25追加：新記事2区分は追加機能の稼働後のGETだけを記録し、過去分を補完しません。`research`は従来どおり `/research.html` の区分で、一覧化前の第1弾本文へのアクセスも含みます。振り替え・複製・削除はしません。追加migration・staging実施結果・本番への後続手順は [ARTICLE_ACCESS_MEASUREMENT.md](ARTICLE_ACCESS_MEASUREMENT.md) を参照してください。本作業ではstagingデータの全消去・初期化を行いません。
 
 上記パスを `run_worker_first` に明示し、ASSETSのキャッシュ利用時もWorkerが処理します。
 `html_handling: none` を維持しています。ローカルの実Static Assetsでは `/index`、`/research`、`/observations`、`/guestbook`、`/research.html/` は404で、計測対象ではありません。新しい別名は作りません。
@@ -55,7 +59,7 @@ CloudflareのWorkerエラー状況も参照できます。詳細調査で `wrang
 ## 90日保存と集計
 
 追加migrationは `0002_page_requests.sql`。
-`page_request_daily` はUTC日付＋4ページの件数だけを期限なしで保存します。生ログから全期間の集計を再生成・上書きしません。
+`page_request_daily` はUTC日付＋6区分の件数だけを期限なしで保存します。追加migrationは `0004_article_page_requests.sql`（適用済み0002は変更しません）。生ログから全期間の集計を再生成・上書きしません。
 生ログから集計への外部キーはON DELETE CASCADEです。集計行を消すと対応する生ログも消えます。生ログだけを消しても集計は残ります。
 
 日次Cronは **03:17 UTC（12:17 JST）**、`17 3 * * *`。

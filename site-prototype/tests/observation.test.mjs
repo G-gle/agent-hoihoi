@@ -46,15 +46,18 @@ test("GET-only exact path scope, actual statuses, receipt UTC, stop switch and p
     assert.match(last[0], /^\d{4}-\d\d-\d\dT.*Z$/);
   }
   const before = events.length;
-  for (const path of ["/about.html", "/agent-traps.html", "/agents-and-traps.html", "/observations-detail.html", "/guestbook-complete.html", "/assets/style.css",
+  assert.deepEqual({ ...PAGE_PATHS }, { "/": "home", "/index.html": "home", "/research.html": "research",
+    "/observations.html": "observations", "/guestbook.html": "guestbook",
+    "/agent-traps.html": "agent_traps", "/agents-and-traps.html": "agents_and_traps" });
+  for (const path of ["/about.html", "/agent-traps", "/agents-and-traps", "/agent-traps.html/", "/agents-and-traps.html/", "/observations-detail.html", "/guestbook-complete.html", "/assets/style.css",
     "/llms.txt", "/robots.txt", "/sitemap.xml", "/research", "/index", "/missing", "/research.html/"]) {
     await worker.fetch(req(path), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response("asset") } }, context());
   }
-  for (const method of ["HEAD", "POST", "OPTIONS", "PUT", "DELETE"]) {
-    await worker.fetch(req("/research.html", method), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response(null) } }, context());
+  for (const method of ["HEAD", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]) for (const path of Object.keys(PAGE_PATHS)) {
+    await worker.fetch(req(path, method), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response(null) } }, context());
   }
-  for (const value of [undefined, "false", true]) {
-    await worker.fetch(req("/"), { ENABLE_OBSERVATION: value, ASSETS: { fetch: () => new Response("site") } }, context());
+  for (const value of [undefined, "false", true]) for (const path of ["/", "/agent-traps.html", "/agents-and-traps.html"]) {
+    await worker.fetch(req(path), { ENABLE_OBSERVATION: value, ASSETS: { fetch: () => new Response("site") } }, context());
   }
   assert.equal(events.length, before);
   const failedAssetContext = context();
@@ -77,9 +80,10 @@ test("GET-only exact path scope, actual statuses, receipt UTC, stop switch and p
 test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, retention and clear isolation", async () => {
   const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: "export default {fetch(){return new Response('test')}}",
     compatibilityDate: "2026-10-21", d1Databases: ["DB"] }));
+  let checkpoint = "schema";
   try {
     const db = await mf.getD1Database("DB");
-    for (const migration of ["0001_environment_check.sql", "0002_page_requests.sql"]) {
+    for (const migration of ["0001_environment_check.sql", "0002_page_requests.sql", "0003_guestbook.sql", "0004_article_page_requests.sql"]) {
       // D1 exec requires one statement per line; comments removed for this harness.
       const sql = (await readFile(new URL("../migrations/" + migration, import.meta.url), "utf8"))
         .replace(/--[^\n]*/g, "").split(";").map(s => s.trim().replace(/\s+/g, " ")).filter(Boolean);
@@ -92,6 +96,7 @@ test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, 
       Cookie: "secret", Authorization: "Bearer secret", "CF-Connecting-IP": "192.0.2.10",
       "Cf-Access-Authenticated-User-Email": "private@example.com",
     });
+    checkpoint = "research concurrent writes";
     await Promise.all(Array.from({ length: 40 }, () => recordRequest(db, request, "research", 200, stamp)));
     assert.equal((await db.prepare("SELECT requests FROM page_request_daily").first()).requests, 40);
     const raw = await db.prepare("SELECT * FROM page_requests LIMIT 1").first();
@@ -99,6 +104,14 @@ test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, 
     assert.equal(raw.referrer_domain, "example.com");
     assert.deepEqual(Object.keys(raw).sort(), ["id", "received_at", "day", "page", "status", "user_agent", "referrer_domain"].sort());
     assert.doesNotMatch(JSON.stringify(raw), /Bearer|private@example|192\.0\.2|never-save|\/private|hidden/);
+    for (const [page, path] of [["agent_traps", "/agent-traps.html"], ["agents_and_traps", "/agents-and-traps.html"]]) {
+      checkpoint = page + " concurrent writes";
+      await Promise.all(Array.from({ length: 20 }, () => recordRequest(db, req(path + "?ignored=1"), page, 404, stamp)));
+      assert.equal((await db.prepare("SELECT requests FROM page_request_daily WHERE page=?").bind(page).first()).requests, 20);
+      assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests WHERE page=? AND status=404").bind(page).first()).n, 20);
+      await recordRequest(db, req(path), page, 500, "2026-10-20T23:59:59.999Z");
+    }
+    checkpoint = "UTC boundary and rollback";
     await recordRequest(db, req("/"), "home", 301, "2026-10-20T23:59:59.999Z");
     await recordRequest(db, req("/"), "home", 304, stamp);
     const noHeaders = await db.prepare("SELECT user_agent, referrer_domain FROM page_requests WHERE page='home' LIMIT 1").first();
@@ -110,14 +123,26 @@ test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, 
     // Also verify rollback of an update to an existing total.
     await assert.rejects(recordRequest(db, req("/research.html"), "research", 200, stamp));
     assert.equal((await db.prepare("SELECT requests FROM page_request_daily WHERE page='research'").first()).requests, 40);
+    for (const page of ["agent_traps", "agents_and_traps"]) {
+      await assert.rejects(recordRequest(db, req("/agent-traps.html"), page, 200, stamp));
+      assert.equal((await db.prepare("SELECT requests FROM page_request_daily WHERE page=? AND day='2026-10-21'").bind(page).first()).requests, 20);
+    }
     await db.prepare("DROP TRIGGER reject_raw").run();
+    checkpoint = "retention";
     const now = Date.parse("2026-10-21T12:00:00.000Z"), boundary = now - RETENTION_MS;
     for (const delta of [-1, 0, 1]) await recordRequest(db, req("/"), "observations", 200, new Date(boundary + delta).toISOString());
     await pruneRaw(db, now);
+    for (const page of ["agent_traps", "agents_and_traps"]) {
+      for (const delta of [-1, 0, 1]) await recordRequest(db, req("/agent-traps.html"), page, 200, new Date(boundary + delta).toISOString());
+      await pruneRaw(db, now);
+      assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests WHERE page=? AND received_at <= ?").bind(page, new Date(boundary + 1).toISOString()).first()).n, 2);
+      assert.equal((await db.prepare("SELECT SUM(requests) AS n FROM page_request_daily WHERE page=?").bind(page).first()).n, 24);
+    }
     assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests WHERE page='observations'").first()).n, 2);
     assert.equal((await db.prepare("SELECT requests FROM page_request_daily WHERE page='observations'").first()).requests, 3);
     await pruneRaw(db, now);
     // Invoke actual scheduled handler twice; create an expired dedicated fixture.
+    checkpoint = "scheduled retention and isolation";
     await recordRequest(db, req("/"), "guestbook", 200, "2000-01-01T00:00:00.000Z");
     for (let n = 0; n < 2; n++) { const ctx = context(); await worker.scheduled({}, { DB: db }, ctx); await ctx.done(); }
     assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests WHERE page='guestbook'").first()).n, 0);
@@ -127,7 +152,8 @@ test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, 
     assert.equal((await db.prepare("SELECT count(*) AS n FROM page_requests").first()).n, 0);
     assert.equal((await db.prepare("SELECT count(*) AS n FROM page_request_daily").first()).n, 0);
     assert.equal((await db.prepare("SELECT count(*) AS n FROM environment_check").first()).n, 1);
-  } finally { await mf.dispose(); }
+  } catch (error) { throw new Error("D1 fixture step: " + checkpoint, { cause: error }); }
+  finally { await mf.dispose(); }
 });
 
 test("administrator commands reject production, unknown DBs, invalid ranges and SQL input", () => {

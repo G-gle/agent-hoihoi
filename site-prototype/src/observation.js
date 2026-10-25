@@ -1,6 +1,7 @@
 export const PAGE_PATHS = Object.freeze({
   "/": "home", "/index.html": "home", "/research.html": "research",
   "/observations.html": "observations", "/guestbook.html": "guestbook",
+  "/agent-traps.html": "agent_traps", "/agents-and-traps.html": "agents_and_traps",
 });
 export const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
 export const INSERT_DAILY = `INSERT INTO page_request_daily (day, page, requests)

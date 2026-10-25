@@ -1,0 +1,114 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/observations-detail.html",
+    "started_at": "2026-10-25T01:42:26.812Z",
+    "completed_at": "2026-10-25T01:52:56.248Z"
+  },
+  "browser_navigation_gets": 1,
+  "status_unavailable_in_browser_api": true,
+  "layouts": [
+    {
+      "articleDashCells": 4,
+      "counts": [
+        {
+          "page": "home",
+          "value": "26"
+        },
+        {
+          "page": "research",
+          "value": "11"
+        },
+        {
+          "page": "observations",
+          "value": "5"
+        },
+        {
+          "page": "guestbook",
+          "value": "25"
+        },
+        {
+          "page": "agent_traps",
+          "value": "1"
+        },
+        {
+          "page": "agents_and_traps",
+          "value": "1"
+        }
+      ],
+      "documentWidth": 375,
+      "headers": [
+        "UTC date",
+        "Home",
+        "Research",
+        "Field observations",
+        "Guestbook",
+        "Article 1: Agent traps",
+        "Article 2: Agents and traps"
+      ],
+      "notes": [
+        "Separate article counts cover requests recorded since this feature was enabled, with no historical backfill. Research totals refer to /research.html, including Article 1 before that URL became the research index.",
+        "An article dash (—) means no retained count, not a measured zero. It can include dates before separate article recording began; neither a dash nor the first record establishes activation time.",
+        "Missing dates are omitted, not filled with zeros. A zero cell means no retained count for that page on a date with other recorded requests; it does not prove uninterrupted measurement."
+      ],
+      "regionWidth": 335,
+      "rows": 3,
+      "tableWidth": 800,
+      "url": "https://agent-hoihoi-production.molamola.workers.dev/observations-detail.html",
+      "width": 390
+    },
+    {
+      "articleDashCells": 4,
+      "counts": [
+        {
+          "page": "home",
+          "value": "26"
+        },
+        {
+          "page": "research",
+          "value": "11"
+        },
+        {
+          "page": "observations",
+          "value": "5"
+        },
+        {
+          "page": "guestbook",
+          "value": "25"
+        },
+        {
+          "page": "agent_traps",
+          "value": "1"
+        },
+        {
+          "page": "agents_and_traps",
+          "value": "1"
+        }
+      ],
+      "documentWidth": 1265,
+      "headers": [
+        "UTC date",
+        "Home",
+        "Research",
+        "Field observations",
+        "Guestbook",
+        "Article 1: Agent traps",
+        "Article 2: Agents and traps"
+      ],
+      "notes": [
+        "Separate article counts cover requests recorded since this feature was enabled, with no historical backfill. Research totals refer to /research.html, including Article 1 before that URL became the research index.",
+        "An article dash (—) means no retained count, not a measured zero. It can include dates before separate article recording began; neither a dash nor the first record establishes activation time.",
+        "Missing dates are omitted, not filled with zeros. A zero cell means no retained count for that page on a date with other recorded requests; it does not prove uninterrupted measurement."
+      ],
+      "regionWidth": 1080,
+      "rows": 3,
+      "tableWidth": 1080,
+      "url": "https://agent-hoihoi-production.molamola.workers.dev/observations-detail.html",
+      "width": 1280
+    }
+  ],
+  "keyboard": {
+    "focus": true,
+    "scrollLeft": 40
+  }
+}
