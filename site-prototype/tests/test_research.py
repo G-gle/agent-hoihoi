@@ -168,6 +168,14 @@ class ResearchWorkflow(unittest.TestCase):
     def test_new_note_in_staging_and_production_sitemaps(self):
         self.note()
         build(self.root)
+        # Exercise the existing environment suite with a real third generated
+        # note, so fixed article counts cannot quietly return to that suite.
+        (self.root / 'tests').mkdir()
+        shutil.copy2(SOURCE / 'tests/environments.test.mjs', self.root / 'tests/environments.test.mjs')
+        shutil.copy2(SOURCE / 'wrangler.jsonc', self.root / 'wrangler.jsonc')
+        regression = subprocess.run(['node', '--test', 'tests/environments.test.mjs'],
+                                    cwd=self.root, capture_output=True, text=True)
+        self.assertEqual(regression.returncode, 0, regression.stdout + regression.stderr)
         script = '''import { STAGING, PRODUCTION } from './scripts/deployment_targets.mjs';
 console.log(JSON.stringify([STAGING, PRODUCTION]));'''
         targets = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', script],

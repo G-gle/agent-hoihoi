@@ -65,6 +65,8 @@ test("management CLIs fail before authentication on ambiguous or forbidden produ
 
 test("prepare retains default staging bytes and all source assets while separating production outputs", async () => isolated(async root => {
   const original = await files(path.join(root, "public"));
+  const articles = JSON.parse(await readFile(path.join(root, "content/research-index.json"), "utf8"));
+  const articlePages = articles.map(article => article.slug + ".html");
   assert.equal(run(root, "prepare_cloudflare.mjs", argsFor(STAGING)).status, 0);
   const stage = await files(path.join(root, ".cloudflare"));
   const stagingConfig = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.staging.json"), "utf8"));
@@ -83,12 +85,13 @@ test("prepare retains default staging bytes and all source assets while separati
     if (!["sitemap.xml", "llms.txt"].includes(name)) assert.equal(prod[name], data, name);
   }
   const sitemap = Buffer.from(prod["sitemap.xml"], "base64").toString();
-  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), [PRODUCTION.url, ...["research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page => PRODUCTION.url + page)]);
+  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), [PRODUCTION.url, ...["research.html", ...articlePages, "about.html"].map(page => PRODUCTION.url + page)]);
   const llms = Buffer.from(prod["llms.txt"], "base64").toString();
   const expected = Buffer.from(original["llms.txt"], "base64").toString().replace(
     "The current staging site remains protected by Cloudflare Access. Public launch is a separate step.", `Production site: ${PRODUCTION.url}`);
   assert.equal(llms, expected);
-  assert.equal((llms.match(/^- \[/gm) ?? []).length, 7);
+  assert.equal((llms.match(/^- \[/gm) ?? []).length, 5 + articles.length);
+  for (const page of articlePages) assert.ok(llms.includes(`](${page})`), page);
   assert.match(Buffer.from(prod["robots.txt"], "base64").toString(), /Allow: \//);
   const config = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.production.json"), "utf8"));
   validateTarget(config, "production");
