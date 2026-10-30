@@ -14,7 +14,7 @@
     "db:rows:local": "wrangler d1 execute agent-hoihoi-staging-db --local --command \"SELECT count(*) AS remaining FROM environment_check\"",
     "db:migrate:remote": "wrangler d1 migrations apply agent-hoihoi-staging-db --remote --config .cloudflare/wrangler.staging.json",
     "db:rows:remote": "wrangler d1 execute agent-hoihoi-staging-db --remote --config .cloudflare/wrangler.staging.json --command \"SELECT count(*) AS remaining FROM environment_check\"",
-    "prepare:cloudflare": "node scripts/prepare_cloudflare.mjs",
+    "prepare:cloudflare": "python scripts/build_research.py --check && node scripts/prepare_cloudflare.mjs",
     "deploy:probe": "wrangler deploy --config .cloudflare/wrangler.probe.json",
     "deploy": "wrangler deploy --config .cloudflare/wrangler.staging.json",
     "deploy:db-check": "wrangler deploy --config .cloudflare/wrangler.staging.json --var ENABLE_DB_CHECK:true",
@@ -22,7 +22,10 @@
     "test": "node --test tests/*.test.mjs",
     "verify:http": "node scripts/verify_worker.mjs",
     "verify:access": "node scripts/verify_access.mjs",
-    "guestbook": "node scripts/guestbook_admin.mjs"
+    "guestbook": "node scripts/guestbook_admin.mjs",
+    "research:build": "python scripts/build_research.py",
+    "research:check": "python scripts/build_research.py --check",
+    "research:test": "python -m unittest discover -s tests -p test_research.py"
   },
   "devDependencies": {
     "wrangler": "4.151.3"

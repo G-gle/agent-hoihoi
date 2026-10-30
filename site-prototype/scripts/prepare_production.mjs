@@ -1,10 +1,11 @@
-import { mkdir, readFile, writeFile, cp, readdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile, cp, readdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { GUESTBOOK_PATHS } from "../src/guestbook.js";
 import { PAGE_PATHS } from "../src/observation.js";
 import { OBSERVATION_PATHS } from "../src/observation_view.js";
 import { PRODUCTION, validateTarget } from "./deployment_targets.mjs";
 import { notificationVars } from "./guestbook_notification_config.mjs";
+import { researchPages } from "./research_pages.mjs";
 
 export async function prepareProduction(root, values) {
   if (values.probe || values["account-id"] !== PRODUCTION.account ||
@@ -23,9 +24,11 @@ export async function prepareProduction(root, values) {
     triggers: { crons: ["17 3 * * *"] },
   };
   validateTarget(config, "production");
+  const pages = await researchPages(root);
+  await rm(assets, { recursive: true, force: true });
   await mkdir(assets, { recursive: true });
   await cp(path.join(root, "public"), assets, { recursive: true });
-  const urls = ["", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page =>
+  const urls = pages.map(page =>
     `  <url><loc>${new URL(page, PRODUCTION.url).href}</loc></url>`).join("\n");
   await writeFile(path.join(assets, "sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);

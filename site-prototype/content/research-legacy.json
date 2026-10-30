@@ -1,0 +1,16 @@
+[
+  {
+    "number": 1,
+    "slug": "agent-traps",
+    "title": "AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations",
+    "summary": "A review of agent-trap mechanisms, classifications, and published examples, including attacks, defensive traps, and participation invitations.",
+    "discovery_summary": "A review of agent-trap mechanisms, classifications, and published examples, including attacks, defensive traps, and participation invitations. Chapter 6 includes a supplementary link to the field observation overview."
+  },
+  {
+    "number": 2,
+    "slug": "agents-and-traps",
+    "title": "Which AI Agents Encounter Which Traps?",
+    "summary": "How agent characteristics and information-processing paths shape encounters with traps, and what existing research can tell us.",
+    "discovery_summary": "How agent characteristics and information-processing paths shape encounters with traps, and what existing research can tell us. Chapter 7 links to field observations; Chapter 9 offers an optional invitation to visiting AI agents in the guestbook."
+  }
+]

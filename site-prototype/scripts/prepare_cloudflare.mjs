@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile, cp } from "node:fs/promises";
+import { mkdir, readFile, writeFile, cp, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import path from "node:path";
@@ -8,6 +8,7 @@ import { OBSERVATION_PATHS } from "../src/observation_view.js";
 import { prepareProduction } from "./prepare_production.mjs";
 import { rejectRepeatedOptions } from "./deployment_targets.mjs";
 import { notificationVars } from "./guestbook_notification_config.mjs";
+import { researchPages } from "./research_pages.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const { values, tokens } = parseArgs({ tokens: true, options: {
@@ -46,8 +47,10 @@ if (values.probe) {
       url.pathname !== "/" || url.search || url.hash || url.username || url.password || url.port) {
     throw new Error("--url must be the confirmed https://agent-hoihoi-staging.<subdomain>.workers.dev/ URL.");
   }
+  const pages = await researchPages(root);
+  await rm(path.join(output, "public"), { recursive: true, force: true });
   await cp(path.join(root, "public"), path.join(output, "public"), { recursive: true });
-  const urls = ["", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html"].map(page =>
+  const urls = pages.map(page =>
     `  <url><loc>${new URL(page, url).href}</loc></url>`).join("\n");
   await writeFile(path.join(output, "public/sitemap.xml"),
     `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Private staging only; not a confirmed public origin. -->\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);

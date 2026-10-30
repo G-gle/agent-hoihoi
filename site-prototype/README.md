@@ -1,3 +1,16 @@
+## 2026年10月30日：Home整理と新規記事の共通生成（配置前）
+
+Homeの個別記事リンクを外し、記事一覧はResearchに集約した。
+新規記事はMarkdown原稿から共通テンプレートで生成し、一覧・llms.txt・sitemapを同時更新する。
+既存01・02の記事本文・URLは保持する。以下の過去記録にあるHomeの直接リンクは撤去済み。
+
+- [原稿の形式、Museへのひな形、Codexの掲載手順](RESEARCH_PUBLISHING.md)
+- 原稿ひな形：`templates/research-note.md`
+- 生成：`python scripts/build_research.py`
+- 更新漏れ確認：`python scripts/build_research.py --check`
+
+本番反映と実記事03以降の掲載は別工程。
+
 ## 2026年10月24日：Research一覧と2本の記事（公開済み）
 
 Researchは `public/research.html` の一覧から、第1弾 `public/agent-traps.html` と第2弾 `public/agents-and-traps.html` へ進む構成です。Homeからも両記事に直接進めます。第1弾の生成先は `agent-traps.html` に変更し、現行フッターを保持しています。一覧の「01」「02」はHomeと共通の番号・グリッド指定を使います。stagingで確認後、本番へ反映済みです。

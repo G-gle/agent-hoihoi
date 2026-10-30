@@ -28,7 +28,7 @@ async function isolated(fn) {
   const root = await mkdtemp(path.join(tmpdir(), "hoihoi-environments-"));
   try {
     await writeFile(path.join(root, "package.json"), '{"type":"module"}');
-    for (const dir of ["public", "scripts", "src"]) await cp(path.join(source, dir), path.join(root, dir), { recursive: true });
+    for (const dir of ["public", "scripts", "src", "content"]) await cp(path.join(source, dir), path.join(root, dir), { recursive: true });
     return await fn(root);
   } finally { await rm(root, { recursive: true, force: true }); }
 }

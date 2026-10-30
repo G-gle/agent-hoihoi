@@ -13,6 +13,9 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
 PAGES = {"index.html", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html", "observations.html", "guestbook.html", "guestbook-complete.html", "observations-detail.html"}
+ARTICLES = json.loads((ROOT / "content/research-index.json").read_text(encoding="utf-8"))
+ARTICLE_PAGES = [a["slug"] + ".html" for a in ARTICLES]
+PAGES.update(ARTICLE_PAGES)
 
 
 class Page(HTMLParser):
@@ -101,7 +104,7 @@ def main():
                     continue
                 link = urlsplit(attrs[key])
                 if link.scheme or link.netloc:
-                    assert tag == "a" and key == "href" and link.scheme == "https" and (name in {"agent-traps.html", "agents-and-traps.html"} or (name == "about.html" and attrs[key] == "https://docs.google.com/forms/d/e/1FAIpQLSeCAIDEG5HPMwmMgEgiOcwOgiO2CT1c4wQB3p3y1eV3OO7qIQ/viewform?usp=publish-editor")), f"Unexpected external dependency: {name}: {attrs[key]}"
+                    assert tag == "a" and key == "href" and link.scheme == "https" and (name in ARTICLE_PAGES or (name == "about.html" and attrs[key] == "https://docs.google.com/forms/d/e/1FAIpQLSeCAIDEG5HPMwmMgEgiOcwOgiO2CT1c4wQB3p3y1eV3OO7qIQ/viewform?usp=publish-editor")), f"Unexpected external dependency: {name}: {attrs[key]}"
                     continue
                 target = (PUBLIC / unquote(link.path)).resolve() if link.path else PUBLIC / name
                 assert target.is_relative_to(PUBLIC.resolve()) and target.is_file(), f"Broken link: {name}: {attrs[key]}"
@@ -109,14 +112,14 @@ def main():
                     destination = parsed.get(target.name)
                     assert destination and unquote(link.fragment) in destination.ids, f"Broken fragment: {attrs[key]}"
                 internal_count += 1
-    checks.append(f"9 HTML pages: titles/layout landmarks, English language and {internal_count} local references checked")
+    checks.append(f"{len(PAGES)} HTML pages: titles/layout landmarks, English language and {internal_count} local references checked")
     checks.append("Every primary nav: Home / Research / About only; footer hoihoi is the sole utility anchor and leads to Guestbook")
     assert not any(t == "a" and a.get("href") == "observations.html" for t, a in parsed["index.html"].elements)
     routes = [("agent-traps.html", "observations.html"), ("agents-and-traps.html", "observations.html"), ("index.html", "guestbook.html"), ("observations.html", "guestbook.html"), ("guestbook-complete.html", "observations-detail.html")]
-    for name in ["research.html", "agent-traps.html", "agents-and-traps.html"]:
+    for name in ["research.html", *ARTICLE_PAGES]:
         assert parsed[name].main_links[1].get("aria-current") == "page", name
     assert any(t == "a" and a.get("href") == "research.html" for t, a in parsed["index.html"].elements)
-    for target in ["agent-traps.html", "agents-and-traps.html"]:
+    for target in ARTICLE_PAGES:
         assert not any(t == "a" and a.get("href") == target for t, a in parsed["index.html"].elements), ("index.html", target)
         assert any(t == "a" and a.get("href") == target for t, a in parsed["research.html"].elements), ("research.html", target)
     for source, target in routes:
@@ -160,14 +163,14 @@ def main():
     config = json.loads((ROOT / "site.config.json").read_text(encoding="utf-8"))
     urls = [node.text for node in ET.parse(PUBLIC / "sitemap.xml").findall("{*}url/{*}loc")]
     valid_bases = [b.rstrip("/") + "/" for b in [config["localBaseUrl"], config["publicBaseUrl"]] if b]
-    assert any(urls == [base, *[base + page for page in ["research.html", "agent-traps.html", "agents-and-traps.html", "about.html"]]] for base in valid_bases), urls
+    assert any(urls == [base, *[base + page for page in ["research.html", *ARTICLE_PAGES, "about.html"]]] for base in valid_bases), urls
     llms = (PUBLIC / "llms.txt").read_text(encoding="utf-8")
-    for target in ["index.html", "research.html", "agent-traps.html", "agents-and-traps.html", "about.html", "observations.html", "guestbook.html"]:
+    for target in ["index.html", "research.html", *ARTICLE_PAGES, "about.html", "observations.html", "guestbook.html"]:
         assert f"]({target})" in llms
     assert "observations-detail.html" not in llms and "guestbook-complete.html" not in llms
     assert "pending administrator approval" in llms and "JavaScript is not required" in llms
     assert not re.search(r"[\u3040-\u30ff\u3400-\u9fff]", llms)
-    checks.append("robots allows all; sitemap contains 5 normal pages; llms describes the research index, both articles, entry points and moderated guestbook")
+    checks.append(f"robots allows all; sitemap contains {3 + len(ARTICLE_PAGES)} normal pages; llms includes all research articles and the moderated guestbook")
     if args.url:
         base = args.url.rstrip("/") + "/"
         count = 0
