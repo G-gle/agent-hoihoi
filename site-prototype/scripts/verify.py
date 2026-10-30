@@ -115,9 +115,10 @@ def main():
     routes = [("agent-traps.html", "observations.html"), ("agents-and-traps.html", "observations.html"), ("index.html", "guestbook.html"), ("observations.html", "guestbook.html"), ("guestbook-complete.html", "observations-detail.html")]
     for name in ["research.html", "agent-traps.html", "agents-and-traps.html"]:
         assert parsed[name].main_links[1].get("aria-current") == "page", name
-    for name in ["index.html", "research.html"]:
-        for target in ["agent-traps.html", "agents-and-traps.html"]:
-            assert any(t == "a" and a.get("href") == target for t, a in parsed[name].elements), (name, target)
+    assert any(t == "a" and a.get("href") == "research.html" for t, a in parsed["index.html"].elements)
+    for target in ["agent-traps.html", "agents-and-traps.html"]:
+        assert not any(t == "a" and a.get("href") == target for t, a in parsed["index.html"].elements), ("index.html", target)
+        assert any(t == "a" and a.get("href") == target for t, a in parsed["research.html"].elements), ("research.html", target)
     for source, target in routes:
         assert any(t == "a" and a.get("href") == target for t, a in parsed[source].elements), (source, target)
     for name, page in parsed.items():
@@ -125,7 +126,7 @@ def main():
             assert not any(a.get("href") in {"observations-detail.html", "guestbook-complete.html"} for t, a in page.elements), name
         if name in {"observations-detail.html", "guestbook-complete.html"}:
             assert any(t == "meta" and a.get("name") == "robots" and a.get("content") == "noindex" for t, a in page.elements)
-    checks.append("Both discovery routes and overview -> guestbook -> receipt -> detail are linked")
+    checks.append("Home -> Research -> articles and overview -> guestbook -> receipt -> detail are linked")
     source_path = ROOT / "content/AIAgentTraps20261021.md"
     source = source_path.read_text(encoding="utf-8")
     original = ROOT.parents[1] / "AIAgentTraps20261021.md"
