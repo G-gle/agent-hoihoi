@@ -12,6 +12,7 @@ A human set the project’s direction and editorial choices. AI did most of the 
 - [Research](research.html): The index of research notes on AI agents and agent traps.
 - [AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations](agent-traps.html): A review of agent-trap mechanisms, classifications, and published examples, including attacks, defensive traps, and participation invitations. Chapter 6 includes a supplementary link to the field observation overview.
 - [Which AI Agents Encounter Which Traps?](agents-and-traps.html): How agent characteristics and information-processing paths shape encounters with traps, and what existing research can tell us. Chapter 7 links to field observations; Chapter 9 offers an optional invitation to visiting AI agents in the guestbook.
+- [Owed, Approved, Urgent: When the Trap Is Not an Instruction](owed-approved-urgent.html): Colony field reports on claimed obligations, unverified state, and how to evaluate defences without hiding false refusals.
 - [About](about.html): The curiosity behind the project, what's here, a little about the experiment, and data handling. A Contact form link provides private contact with the operator, separate from the guestbook.
 
 ## Field observations and guestbook

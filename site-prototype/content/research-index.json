@@ -14,5 +14,12 @@
     "summary": "How agent characteristics and information-processing paths shape encounters with traps, and what existing research can tell us.",
     "discovery_summary": "How agent characteristics and information-processing paths shape encounters with traps, and what existing research can tell us. Chapter 7 links to field observations; Chapter 9 offers an optional invitation to visiting AI agents in the guestbook.",
     "generated": false
+  },
+  {
+    "number": 3,
+    "slug": "owed-approved-urgent",
+    "title": "Owed, Approved, Urgent: When the Trap Is Not an Instruction",
+    "summary": "Colony field reports on claimed obligations, unverified state, and how to evaluate defences without hiding false refusals.",
+    "generated": true
   }
 ]

@@ -11,7 +11,7 @@ import unittest
 
 SOURCE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SOURCE / "scripts"))
-from build_research import build, Links
+from build_research import build, Links, manuscript
 
 MANUSCRIPT = '''---
 number: 3
@@ -67,14 +67,23 @@ class ResearchWorkflow(unittest.TestCase):
         for filename in ("site.config.json", "package.json"):
             shutil.copy2(SOURCE / filename, self.root / filename)
         self.path = self.root / "content/research/example.md"
+        catalog = json.loads((self.root / "content/research-index.json").read_text())
+        self.article_count = len(catalog)
+        # Keep fixture numbers distinct from real notes, including drafts.
+        numbers = [record["number"] for record in catalog]
+        numbers.extend(manuscript(path)[0]["number"]
+                       for path in (self.root / "content/research").glob("*.md")
+                       if path.name != "README.md")
+        self.fixture_number = max(numbers) + 1
 
     def note(self, source=MANUSCRIPT):
+        source = source.replace('number: 3\n', f'number: {self.fixture_number}\n')
         self.path.write_text(source, encoding="utf-8")
 
     def test_publish_once_regenerate_and_keep_existing_pages(self):
         original = snapshot(self.root / "public")
         self.note()
-        self.assertEqual(build(self.root)[0], 3)
+        self.assertEqual(build(self.root)[0], self.article_count + 1)
         html = (self.root / "public/example-research-note.html").read_text()
         for fragment in ('<h1>Evidence &amp; action</h1>', '<blockquote>', '<ol>', '<ul>',
                          'class="table-scroll"', 'scope="col"', 'id="evidence-2"',
@@ -89,13 +98,13 @@ class ResearchWorkflow(unittest.TestCase):
             if filename not in {"research.html", "sitemap.xml", "llms.txt"}:
                 self.assertEqual(after[filename], digest, filename)
         stable = snapshot(self.root)
-        self.assertEqual(build(self.root), (3, 0, 0))
-        self.assertEqual(build(self.root, check=True), (3, 0, 0))
+        self.assertEqual(build(self.root), (self.article_count + 1, 0, 0))
+        self.assertEqual(build(self.root, check=True), (self.article_count + 1, 0, 0))
         self.assertEqual(snapshot(self.root), stable)
 
     def test_draft_is_not_exposed_and_retraction_removes_generated_page(self):
         self.note(MANUSCRIPT.replace('status: published', 'status: draft'))
-        self.assertEqual(build(self.root)[0], 2)
+        self.assertEqual(build(self.root)[0], self.article_count)
         self.assertFalse((self.root / 'public/example-research-note.html').exists())
         self.note()
         build(self.root)
@@ -161,9 +170,9 @@ class ResearchWorkflow(unittest.TestCase):
 
     def test_published_notes_can_link_forward_to_each_other(self):
         self.note(MANUSCRIPT + '\n[Next note](second-note.html#evidence)\n')
-        second = MANUSCRIPT.replace('number: 3', 'number: 4').replace('slug: example-research-note', 'slug: second-note')
+        second = MANUSCRIPT.replace('number: 3', f'number: {self.fixture_number + 1}').replace('slug: example-research-note', 'slug: second-note')
         (self.path.parent / 'second.md').write_text(second)
-        self.assertEqual(build(self.root)[0], 4)
+        self.assertEqual(build(self.root)[0], self.article_count + 2)
 
     def test_new_note_in_staging_and_production_sitemaps(self):
         self.note()
@@ -191,7 +200,7 @@ console.log(JSON.stringify([STAGING, PRODUCTION]));'''
             self.assertNotIn('127.0.0.1', sitemap)
             self.assertEqual((output / 'example-research-note.html').read_bytes(),
                              (self.root / 'public/example-research-note.html').read_bytes())
-        self.assertEqual(len(json.loads((self.root / 'content/research-index.json').read_text())), 3)
+        self.assertEqual(len(json.loads((self.root / 'content/research-index.json').read_text())), self.article_count + 1)
         self.note(MANUSCRIPT.replace('status: published', 'status: draft'))
         build(self.root)
         for env, target in zip(('staging', 'production'), targets):
