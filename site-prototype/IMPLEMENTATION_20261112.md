@@ -39,3 +39,29 @@
 元の作業場所と `implement-v1`/`main` は変更していない。今回の実装は作業ブランチに保存し、同じCloudflare本番Workerへ反映した。コードとDBを機械的に一緒に巻き戻さず、既存の新着受信も保持する。
 
 日常運用の実装後コマンドは `OPERATIONS.md`。本記録の完了点から継続し、今回の調査・ローカル試験を初めから繰り返さない。
+
+## レビュー3点修正（2026-11-12、stagingのみ）
+
+依頼: `AgentHoihoi_Review_Fixes_Codex_20261112.md`。着手時は `implement-renew-20261112` / `b9a2074`、未コミット差分なし。受け取ったレビューは表示/CSSの指摘で、回答・投稿の保存確認は行っていないとの説明だった。以下の保存・遷移・DB確認は今回こちらで実施した結果。
+
+### 修正
+
+1. `public/assets/style.css` のHOME質問グリッドを全幅で1列へ変更。HTMLは元からWho→訪問経験の順だったので維持。質問・選択肢・説明文と、既存のWho→訪問経験→Responsesの処理は変更せず、部分回答・省略を含めて確認した。
+2. `src/site.js` に `articleEntry` を設け、独立一覧とResponsesの4記事タイトルで同じ生成処理を使用。通常の `/participate` へ記事ID・本文URL・state・source・backを渡す。Responsesのbackは現在の流入文脈を保持する。質問通過/省略時にbackが落ちていた箇所も目的地まで引き継ぐよう修正。検索用本文URL・canonical・サイトマップの生成は変更していない。
+3. ResponsesのChange responseを、現在の署名stateからDBで読んだ `(question_id,target_id)` の保存行がある場合だけ生成。共通4問と記事ごとのリアクションに同じ判定を使用。Other/Not sureを有効な保存済み回答として扱い、新しい回答入口は追加していない。
+
+### 実際の確認
+
+- 関係するローカルテスト `node --test tests/review_fixes.test.mjs` の6件が全成功。Cookie/JavaScriptを使わないWorkerリクエストで、HOME2問の同一単位保存と再送、どちらか片方/両方未回答の省略、未回答/不正state、Whoだけ/共通回答済み、4記事のリンクと本文直リンク/サイトマップ、Other/Not sure、記事単位の変更、同じ行の更新を検証。初回の全試験・migration・投稿/通知試験は繰り返していない。
+- stagingの既存Access認証を継続利用し、設定変更なし。幅1280×1000と390×1000の実ブラウザでWho→訪問経験の縦配置を確認。両方とも2問の左位置・幅が一致し、2問目の上端が1問目の下端より下。横はみ出しなし。画像は `verification/2026-11-12-review-fixes/home-desktop.jpg` と `home-mobile.jpg`。
+- stagingでResponsesへの直接訪問/有効な未回答stateは全集計が見え、変更リンク0件。Whoだけ回答し訪問経験を省略するとResponsesへ進み、Whoの変更リンクだけを表示。DBでもWhoの1行のみだった。
+- 未回答のResponsesの記事タイトルからWhoを質問。Whoだけ回答後はChooser→Purposeへ進む。省略して記事へ進んだ後、次の通常導線で未回答を再質問。共通3問が回答済みの場合は4記事とも目的の本文へ進むことを確認した。
+- Other/Not sureでも該当項目の変更リンクが表示される。Muse記事だけリアクションを回答すると、その記事だけ変更リンクを表示。選び直しでIt made sense.が0件、It raised a question.が1件となった。不正stateでは変更リンク0件で4記事の集計を閲覧できた。
+- 別の試験単位でもHOMEのWho→訪問経験→Responses（#visit）を実操作し、同じ単位に2行だけ保存。2単位の最終DBは計7行で期待値と一致し、選び直し/表示による二重加算なし。
+- 試験用2回答単位の7行だけを終了時に削除し、同じstateのResponsesで変更リンクが0件に戻ることも確認。既存回答をまとめて削除せず、投稿・通知・本番データは操作していない。DB確認/片付けの結果は同じ証跡フォルダの `answers-*.json`。試験単位の識別情報はGit対象外 `.cloudflare/private/review-fixes-groups.json`。
+
+### 配信・確認先
+
+- staging Version: `1e4697d2-a636-4cb9-9b84-99c80b38120a`。確認用URL: https://agent-hoihoi-staging.molamola.workers.dev/ 、https://agent-hoihoi-staging.molamola.workers.dev/responses.html 。HOMEをブラウザに表示して利用者の確認用に保持。
+- **本番未反映。** 今回の依頼では本番deploy・DB migration・原稿変更・投稿/メール通知の再試験を行っていない。開始時の本番Versionは `df5b7af7-fed2-4c64-8ad1-a047d1407797`。最終照合は `versions-after.json` に記録する。
+- 作業ブランチは `implement-renew-20261112`。修正・対象テスト・画像/検証証跡のコミットは `8aee7cc`（push済み）。この記録と最終Version照合は後続の記録コミットで保存する。次回はこのstagingを利用者が確認した結果から継続し、本番反映の指示があるまで本番へdeployしない。
