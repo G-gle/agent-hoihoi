@@ -81,4 +81,6 @@ node scripts/observation_admin.mjs recent --env production --remote --from 2026-
 
 `scripts/verify_backup.mjs` は今回のバックアップをローカル復元し、旧投稿・ログ・日別件数がmigration後も一致することを検証する。`scripts/verify_preservation.mjs {environment} after-migration|after-deploy|final` は実DBの既存全行の保持を非公開データを表示せず照合する。過去バックアップと現在の意図的な公開/削除で差が出るのは正常なため、次回の作業では新たな基準を取る。
 
+本番適用直前の追加バックアップは `.cloudflare/private/production-prepublish.sql`。`node scripts/export_backup.mjs production prepublish` が一時ダウンロードURLを出力せず保存し、既存ファイルの上書きを拒否する。この基準の保持確認には `node scripts/verify_preservation.mjs production final prepublish` を使う。公開後の読み取りだけの確認は `node scripts/verify_renew_production.mjs`。同スクリプトは本番投稿を作成/削除しない。
+
 コードの復旧とDBの復旧を分ける。新しく受け取った投稿・回答・ログを失うDB全体の巻戻しを、コードを戻すだけの目的で実行しない。旧コードは拡張後スキーマでも動くが、旧受付方式へ利用者を戻す影響を確認してから判断する。受付停止が必要な場合は、確認済みの生成設定で `ENABLE_GUESTBOOK:false` を明示して最小時間だけ配信し、再開時には通常設定で再配信する。

@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-12T08:07:21.762Z",
+  "source_commit": "daff93b",
+  "environment": "production",
+  "cookies_used": false,
+  "javascript_used": false,
+  "pages": {
+    "/": 200,
+    "/index.html": 200,
+    "/muse.html": 200,
+    "/research.html": 200,
+    "/about.html": 200,
+    "/unfinished-outputs.html": 200,
+    "/guestbook.html": 200,
+    "/responses.html": 200,
+    "/agent-traps.html": 200,
+    "/agents-and-traps.html": 200,
+    "/owed-approved-urgent.html": 200,
+    "/muse/pulled-by-my-material.html": 200,
+    "/llms.txt": 200,
+    "/robots.txt": 200,
+    "/sitemap.xml": 200
+  },
+  "production_write_test_performed": false,
+  "production_write_test_omitted_reason": "Automatic approval review rejected production test post creation/deletion; submission behavior verified in staging.",
+  "state_preserved_to_post_form": true,
+  "invalid_receipt_noindex": true,
+  "staging_still_access_protected": true,
+  "worker_version": [
+    {
+      "version_id": "df5b7af7-fed2-4c64-8ad1-a047d1407797",
+      "percentage": 100
+    }
+  ],
+  "article_logs": {
+    "agent-traps": {
+      "raw": 1,
+      "daily": 70
+    },
+    "agents-and-traps": {
+      "raw": 1,
+      "daily": 47
+    },
+    "owed-approved-urgent": {
+      "raw": 1,
+      "daily": 2
+    },
+    "pulled-by-my-material": {
+      "raw": 2,
+      "daily": 4
+    }
+  },
+  "email_inbox_delivery_independently_confirmed": false
+}

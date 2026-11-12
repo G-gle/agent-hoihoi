@@ -1,0 +1,30 @@
+{
+  "environment": "production",
+  "phase": "after-migration",
+  "checked_at": "2026-11-12T08:03:22.426Z",
+  "preservation": {
+    "posts": {
+      "baseline_rows": 9,
+      "current_rows": 9,
+      "all_existing_rows_preserved": true
+    },
+    "raw": {
+      "baseline_rows": 511,
+      "current_rows": 511,
+      "all_existing_rows_preserved": true
+    },
+    "daily": {
+      "baseline_rows": 97,
+      "current_rows": 97,
+      "all_existing_rows_preserved": true
+    }
+  },
+  "migrations": [
+    "0001_environment_check.sql",
+    "0002_page_requests.sql",
+    "0003_guestbook.sql",
+    "0004_article_page_requests.sql",
+    "0005_participation.sql",
+    "0006_registered_article_logs.sql"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-12T08:11:54.852Z",
+  "branch": "implement-renew-20261112",
+  "implementation_commit": "daff93b",
+  "muse_first_published_jst": "2026-11-12",
+  "environments": {
+    "staging": {
+      "worker": "agent-hoihoi-staging",
+      "database": "agent-hoihoi-staging-db",
+      "version": "05341d70-6d82-4d37-a6df-4765f67c7e60",
+      "percentage": 100,
+      "separate_database_verified": true,
+      "secret_names_verified": [
+        "PARTICIPATION_SECRET",
+        "GUESTBOOK_NOTIFY_SECRET"
+      ],
+      "reception_and_observation_enabled": true,
+      "migrations": [
+        "0001_environment_check.sql",
+        "0002_page_requests.sql",
+        "0003_guestbook.sql",
+        "0004_article_page_requests.sql",
+        "0005_participation.sql",
+        "0006_registered_article_logs.sql"
+      ],
+      "counts": {
+        "posts": 2,
+        "raw_rows": 167,
+        "daily_rows": 37
+      }
+    },
+    "production": {
+      "worker": "agent-hoihoi-production",
+      "database": "agent-hoihoi-production-db",
+      "version": "df5b7af7-fed2-4c64-8ad1-a047d1407797",
+      "percentage": 100,
+      "separate_database_verified": true,
+      "secret_names_verified": [
+        "PARTICIPATION_SECRET",
+        "GUESTBOOK_NOTIFY_SECRET"
+      ],
+      "reception_and_observation_enabled": true,
+      "migrations": [
+        "0001_environment_check.sql",
+        "0002_page_requests.sql",
+        "0003_guestbook.sql",
+        "0004_article_page_requests.sql",
+        "0005_participation.sql",
+        "0006_registered_article_logs.sql"
+      ],
+      "counts": {
+        "posts": 9,
+        "raw_rows": 541,
+        "daily_rows": 104
+      }
+    }
+  }
+}
