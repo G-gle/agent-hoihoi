@@ -8,6 +8,7 @@ import { spawnSync } from "node:child_process";
 import { STAGING, PRODUCTION, targetFor, adminTarget, validateTarget } from "../scripts/deployment_targets.mjs";
 import { buildQuery } from "../scripts/observation_admin.mjs";
 import { notificationVars } from "../scripts/guestbook_notification_config.mjs";
+import { SITE_PATHS, SITEMAP_PATHS, discovery } from "../src/site.js";
 import { PAGE_PATHS } from "../src/observation.js";
 
 const source = fileURLToPath(new URL("../", import.meta.url));
@@ -29,6 +30,8 @@ async function isolated(fn) {
   try {
     await writeFile(path.join(root, "package.json"), '{"type":"module"}');
     for (const dir of ["public", "scripts", "src", "content"]) await cp(path.join(source, dir), path.join(root, dir), { recursive: true });
+    const bundle = path.join(root, 'src/articles.generated.js');
+    await writeFile(bundle, (await readFile(bundle,'utf8')).replace(/"date": null/g, '"date": "2026-11-12"'));
     return await fn(root);
   } finally { await rm(root, { recursive: true, force: true }); }
 }
@@ -71,7 +74,7 @@ test("prepare retains default staging bytes and all source assets while separati
   const stage = await files(path.join(root, ".cloudflare"));
   const stagingConfig = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.staging.json"), "utf8"));
   for (const route of Object.keys(PAGE_PATHS)) assert.ok(stagingConfig.assets.run_worker_first.includes(route), route);
-  assert.deepEqual(stagingConfig.vars, { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("staging") });
+  assert.deepEqual(stagingConfig.vars, { SITE_ORIGIN: new URL(STAGING.url).origin, ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("staging") });
   assert.equal(stagingConfig.vars.GUESTBOOK_NOTIFY_SECRET, undefined);
   assert.equal(run(root, "prepare_cloudflare.mjs", argsFor(STAGING, ["--env", "staging"])).status, 0);
   assert.deepEqual(await files(path.join(root, ".cloudflare")), stage);
@@ -82,23 +85,20 @@ test("prepare retains default staging bytes and all source assets while separati
   const prod = await files(path.join(root, ".cloudflare/production/public"));
   assert.deepEqual(Object.keys(prod).sort(), Object.keys(original).sort());
   for (const [name, data] of Object.entries(original)) {
-    if (!["sitemap.xml", "llms.txt"].includes(name)) assert.equal(prod[name], data, name);
+    if (!["sitemap.xml", "llms.txt", "robots.txt"].includes(name)) assert.equal(prod[name], data, name);
   }
   const sitemap = Buffer.from(prod["sitemap.xml"], "base64").toString();
-  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), [PRODUCTION.url, ...["research.html", ...articlePages, "about.html"].map(page => PRODUCTION.url + page)]);
+  assert.deepEqual([...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(x => x[1]), SITEMAP_PATHS.map(p => new URL(p,PRODUCTION.url).href));
   const llms = Buffer.from(prod["llms.txt"], "base64").toString();
-  const expected = Buffer.from(original["llms.txt"], "base64").toString().replace(
-    "The current staging site remains protected by Cloudflare Access. Public launch is a separate step.", `Production site: ${PRODUCTION.url}`);
-  assert.equal(llms, expected);
-  assert.equal((llms.match(/^- \[/gm) ?? []).length, 5 + articles.length);
-  for (const page of articlePages) assert.ok(llms.includes(`](${page})`), page);
+  assert.equal(llms, discovery("/llms.txt", new URL(PRODUCTION.url).origin));
+  for (const route of SITE_PATHS) assert.ok(stagingConfig.assets.run_worker_first.includes(route));
   assert.match(Buffer.from(prod["robots.txt"], "base64").toString(), /Allow: \//);
   const config = JSON.parse(await readFile(path.join(root, ".cloudflare/wrangler.production.json"), "utf8"));
   validateTarget(config, "production");
   for (const route of Object.keys(PAGE_PATHS)) assert.ok(config.assets.run_worker_first.includes(route), route);
   const local = await readFile(path.join(source, "wrangler.jsonc"), "utf8");
-  for (const route of ["/agent-traps.html", "/agents-and-traps.html"]) assert.ok(local.includes(JSON.stringify(route)), route);
-  assert.deepEqual(config.vars, { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") });
+  assert.match(local, /"run_worker_first": true/);
+  assert.deepEqual(config.vars, { SITE_ORIGIN: new URL(PRODUCTION.url).origin, ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") });
   assert.equal(config.vars.GUESTBOOK_NOTIFY_SECRET, undefined);
   assert.equal(config.preview_urls, false);
   assert.deepEqual(config.triggers.crons, ["17 3 * * *"]);

@@ -1,5 +1,5 @@
 import { PAGE_PATHS, recordRequest, pruneRaw } from "./observation.js";
-import { handleGuestbook } from "./guestbook.js";
+import { handleSite } from "./site.js";
 import { handleObservation } from "./observation_view.js";
 
 const CHECK_PATH = "/api/internal/db-check";
@@ -92,7 +92,7 @@ writes fixed test data, reads it back, and deletes it. No visitor data is used.<
     // html_handling:none keeps .html links but does not resolve / to index.
     let response;
     try {
-      response = await handleObservation(request, env) ?? await handleGuestbook(request, env, undefined, ctx);
+      response = await handleSite(request, env, ctx) ?? await handleObservation(request, env);
       if (response) {
         // Guestbook responses always pass through the Worker, including HEAD/POST.
       } else if (path === "/") {

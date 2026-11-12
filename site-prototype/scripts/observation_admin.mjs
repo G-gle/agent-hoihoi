@@ -3,6 +3,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import path from "node:path";
 import { RETENTION_MS } from "../src/observation.js";
+import { ARTICLES } from '../src/articles.generated.js';
 import { STAGING, adminTarget, readTargetConfig, rejectRepeatedOptions } from "./deployment_targets.mjs";
 export { STAGING, validateTarget } from "./deployment_targets.mjs";
 
@@ -33,14 +34,17 @@ export function buildQuery(action, options, now = Date.now(), environment = "sta
     throw new Error("The inclusive date range must be 1–366 days.");
   }
   const limit = options.limit ?? "100";
+  const article = options.article ? ARTICLES.find(a=>a.slug === options.article) : null;
+  if (options.article && !article) throw new Error('Unknown registered article ID.');
+  const articleFilter = article ? ` AND page = '${article.page}'` : '';
   if (!/^[1-9]\d{0,3}$/.test(limit) || Number(limit) > 1000) throw new Error("--limit must be 1–1000.");
   // Wrangler CLI has no bind parameter option: only validated canonical dates
   // and integers are interpolated. No arbitrary SQL, identifiers or text input.
   if (action === "daily") return `SELECT day, page, requests FROM page_request_daily
-WHERE day >= '${from}' AND day <= '${to}' ORDER BY day DESC, page LIMIT ${Number(limit)};`;
+WHERE day >= '${from}' AND day <= '${to}'${articleFilter} ORDER BY day DESC, page LIMIT ${Number(limit)};`;
   const end = new Date(Date.parse(to) + 86400000).toISOString();
   return `SELECT id, received_at, page, status, user_agent, referrer_domain FROM page_requests
-WHERE received_at >= '${from}T00:00:00.000Z' AND received_at < '${end}'
+WHERE received_at >= '${from}T00:00:00.000Z' AND received_at < '${end}'${articleFilter}
 ORDER BY received_at DESC, id DESC LIMIT ${Number(limit)};`;
 }
 
@@ -66,7 +70,7 @@ export async function executeSQL(sql, remote = false, environment = "staging") {
 async function main() {
   const { values, positionals, tokens } = parseArgs({ allowPositionals: true, tokens: true, options: {
     env: { type: "string" }, remote: { type: "boolean", default: false },
-    from: { type: "string" }, to: { type: "string" }, limit: { type: "string" }, confirm: { type: "string" },
+    from: { type: "string" }, to: { type: "string" }, limit: { type: "string" }, confirm: { type: "string" }, article: { type: "string" },
   } });
   rejectRepeatedOptions(tokens);
   const target = adminTarget(values.env, values.remote);

@@ -1,4 +1,5 @@
-import { escapeHTML } from "./guestbook.js";
+import { escapeHTML, responseState } from "./participation.js";
+import { footer } from "./site.js";
 
 export const OBSERVATION_PATHS = ["/observations.html", "/observations-detail.html"];
 // One read statement gives totals, period and recent days a single SQLite snapshot.
@@ -82,12 +83,22 @@ export async function handleObservation(request, env) {
       state = snapshot.summary.first_day ? "ready" : "unmeasured";
     } catch { state = "unavailable"; }
   }
-  const html = (await asset.text()).replace(/<!--OBSERVATION_DATA_START-->[\s\S]*?<!--OBSERVATION_DATA_END-->/,
+  let html = (await asset.text()).replace(/<!--OBSERVATION_DATA_START-->[\s\S]*?<!--OBSERVATION_DATA_END-->/,
     () => render(snapshot, state, path === "/observations-detail.html"));
+  if (env.PARTICIPATION_SECRET) {
+    const s = await responseState(env.PARTICIPATION_SECRET, new URL(request.url).searchParams.get('state'));
+    html = html.replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/, () => footer(s.token))
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, '')
+      .replace(/href="(\/(?!assets\/)[^"\s]*)"/g, (whole, value) => {
+        const url = new URL(value.replace(/&amp;/g, '&'), 'https://site.invalid');
+        if (!url.searchParams.has('state')) url.searchParams.set('state', s.token);
+        return `href="${escapeHTML(url.pathname + url.search + url.hash)}"`;
+      });
+  }
   return new Response(request.method === "HEAD" ? null : html, { headers: {
     "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store",
     "Content-Security-Policy": "default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; frame-ancestors 'none'",
-    "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin",
+    "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer",
     ...(path === "/observations-detail.html" ? { "X-Robots-Tag": "noindex" } : {}),
   } });
 }

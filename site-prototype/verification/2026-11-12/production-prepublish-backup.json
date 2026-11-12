@@ -1,0 +1,10 @@
+{
+  "backup_sha256": "51b96bf340630ac641cbf93a88bdc68de1cf071e269f395d05fe4882a6b02476",
+  "restored_and_migrated_locally": true,
+  "all_existing_rows_equal": true,
+  "counts": {
+    "posts": 9,
+    "raw": 511,
+    "daily": 97
+  }
+}

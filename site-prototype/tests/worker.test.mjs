@@ -79,20 +79,15 @@ test("missing D1 binding is a generic 500", async () => {
   assert.equal(response.status, 500);
   assert.deepEqual(await response.json(), { error: "Database check failed" });
 });
-test("root resolves index.html while preserving the query", async () => {
-  const response = await worker.fetch(request("GET", "/?check=1"), {
-    ASSETS: { fetch(req) {
-      assert.equal(new URL(req.url).pathname, "/index.html");
-      assert.equal(new URL(req.url).search, "?check=1");
-      return new Response("index");
-    } },
-  });
-  assert.equal(await response.text(), "index");
+test("dynamic pages fail closed if signing is unavailable", async () => {
+  const response = await worker.fetch(request("GET", "/"), {});
+  assert.equal(response.status, 503);
+  assert.match(await response.text(), /temporarily unavailable/);
 });
 test("unknown internal API stays 404 while ordinary paths use ASSETS", async () => {
   assert.equal((await worker.fetch(request("POST", "/api/internal/other"), { ENABLE_DB_CHECK: "true" })).status, 404);
-  const response = await worker.fetch(request("GET", "/research.html"), {
-    ASSETS: { fetch(req) { assert.equal(new URL(req.url).pathname, "/research.html"); return new Response("asset"); } },
+  const response = await worker.fetch(request("GET", "/assets/style.css"), {
+    ASSETS: { fetch(req) { assert.equal(new URL(req.url).pathname, "/assets/style.css"); return new Response("asset"); } },
   });
   assert.equal(await response.text(), "asset");
 });

@@ -1,0 +1,13 @@
+{
+  "runtime": "Miniflare / workerd + actual D1 + Node HTTP client",
+  "concurrent_requests": 6,
+  "one_post_one_receipt": true,
+  "post_10000_emoji": true,
+  "post_encoded_bytes_at_limit": 131072,
+  "post_above_limit_status": 413,
+  "get_absolute_url_bytes_at_limit": 15000,
+  "get_above_limit_status": 414,
+  "registered_new_article_actual_get_raw_and_daily": true,
+  "cookies_used": false,
+  "javascript_required": false
+}

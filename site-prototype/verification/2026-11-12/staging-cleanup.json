@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-11-12T07:58:41.848Z",
+  "environment": "staging",
+  "action": "cleanup",
+  "operator_fixture_posts": 4,
+  "public_number": 3,
+  "snapshot_preserved": true,
+  "answer_rows": 4,
+  "existing_data_not_touched": true,
+  "article_logs": {
+    "agent-traps": {
+      "raw": 1,
+      "daily": 6
+    },
+    "agents-and-traps": {
+      "raw": 1,
+      "daily": 6
+    },
+    "owed-approved-urgent": {
+      "raw": 1,
+      "daily": 1
+    },
+    "pulled-by-my-material": {
+      "raw": 1,
+      "daily": 1
+    }
+  }
+}

@@ -1,13 +1,17 @@
 import { mkdir, readFile, writeFile, cp, readdir, rm } from "node:fs/promises";
 import path from "node:path";
-import { GUESTBOOK_PATHS } from "../src/guestbook.js";
+import { SITE_PATHS, discovery } from "../src/site.js";
 import { PAGE_PATHS } from "../src/observation.js";
 import { OBSERVATION_PATHS } from "../src/observation_view.js";
 import { PRODUCTION, validateTarget } from "./deployment_targets.mjs";
 import { notificationVars } from "./guestbook_notification_config.mjs";
 import { researchPages } from "./research_pages.mjs";
+import { ARTICLES } from '../src/articles.generated.js';
 
 export async function prepareProduction(root, values) {
+  // Dated production builds are prepared on the actual first publication day.
+  // A stale or missing date is never silently substituted with the build date.
+  if (ARTICLES.some(a => !a.date)) throw new Error('Confirm the actual first publication date in the manuscript before preparing production.');
   if (values.probe || values["account-id"] !== PRODUCTION.account ||
       values["database-id"] !== PRODUCTION.id || values.url !== PRODUCTION.url) {
     throw new Error("Production requires the exact pinned account, separate D1 UUID and candidate URL; probe is staging-only.");
@@ -17,10 +21,10 @@ export async function prepareProduction(root, values) {
     name: PRODUCTION.worker, account_id: PRODUCTION.account, main: "../src/worker.js",
     compatibility_date: "2026-10-21", workers_dev: true, preview_urls: false,
     assets: { directory: "./production/public", binding: "ASSETS", html_handling: "none",
-      not_found_handling: "none", run_worker_first: [...new Set([...Object.keys(PAGE_PATHS), ...GUESTBOOK_PATHS, ...OBSERVATION_PATHS, "/api/internal/*"])] },
+      not_found_handling: "none", run_worker_first: [...new Set([...Object.keys(PAGE_PATHS), ...SITE_PATHS, ...OBSERVATION_PATHS, "/api/internal/*"])] },
     d1_databases: [{ binding: "DB", database_name: PRODUCTION.database, database_id: PRODUCTION.id,
       migrations_dir: "../migrations", remote: false }],
-    vars: { ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") },
+    vars: { SITE_ORIGIN: new URL(PRODUCTION.url).origin, ENABLE_DB_CHECK: "false", ENABLE_OBSERVATION: "true", ENABLE_GUESTBOOK: "true", ...notificationVars("production") },
     triggers: { crons: ["17 3 * * *"] },
   };
   validateTarget(config, "production");
@@ -28,15 +32,8 @@ export async function prepareProduction(root, values) {
   await rm(assets, { recursive: true, force: true });
   await mkdir(assets, { recursive: true });
   await cp(path.join(root, "public"), assets, { recursive: true });
-  const urls = pages.map(page =>
-    `  <url><loc>${new URL(page, PRODUCTION.url).href}</loc></url>`).join("\n");
-  await writeFile(path.join(assets, "sitemap.xml"),
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
-  // Environment annotation only. Keep the seven discovery links and all site copy.
-  const stagingNote = "The current staging site remains protected by Cloudflare Access. Public launch is a separate step.";
-  const llms = await readFile(path.join(assets, "llms.txt"), "utf8");
-  if (llms.split(stagingNote).length !== 2) throw new Error("Review the changed llms environment annotation before preparing production.");
-  await writeFile(path.join(assets, "llms.txt"), llms.replace(stagingNote, `Production site: ${PRODUCTION.url}`));
+  for (const name of ['sitemap.xml','llms.txt','robots.txt'])
+    await writeFile(path.join(assets,name),discovery('/'+name,new URL(PRODUCTION.url).origin));
   async function check(dir) {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       const file = path.join(dir, entry.name);

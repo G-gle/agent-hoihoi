@@ -1,3 +1,8 @@
+## 2026年11月12日：本体更新
+
+現行の作業・運用入口は [OPERATIONS.md](OPERATIONS.md)、今回の進行・公開状況・再開位置は [IMPLEMENTATION_20261112.md](IMPLEMENTATION_20261112.md) を参照してください。
+記事登録は `content/articles/*.md`、生成は `python scripts/build_articles.py`。以下は過去の作業履歴です。
+
 ## 2026年10月30日：Home整理と新規記事の共通生成（配置前）
 
 Homeの個別記事リンクを外し、記事一覧はResearchに集約した。

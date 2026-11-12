@@ -1,0 +1,38 @@
+{
+  "staging": {
+    "backup_sha256": "fc41221945b92d3fc41b1d54cae19ad6afc23e1170b4592d2879f82146191263",
+    "backup_bytes": 53136,
+    "restored_locally": true,
+    "migrated_locally": true,
+    "counts": {
+      "posts": 2,
+      "raw": 154,
+      "daily": 28
+    },
+    "before_after_sha256": {
+      "posts": "69a37c432d8113b04b42a162e4166a702435ff9cce4e4596ec7999dda17e3d6f",
+      "raw": "3fdffa0f952ed4f813ac0ae7188e5f0678b5cb6fb5f49628563feabd72a24bc8",
+      "daily": "f84e10b51ed76e5eebc108013a3eb361b5881af199639ae2dd1379eccf5d8bbf"
+    },
+    "preserved": true,
+    "foreign_key_check": []
+  },
+  "production": {
+    "backup_sha256": "1415e56ffa7e26369dd375ee178879f2f2a412fd35fd41066a7db9af1ed1003f",
+    "backup_bytes": 158688,
+    "restored_locally": true,
+    "migrated_locally": true,
+    "counts": {
+      "posts": 9,
+      "raw": 510,
+      "daily": 96
+    },
+    "before_after_sha256": {
+      "posts": "65f57d4f3e46cd99d935b3eebac9d11d7900edb56ae0a84d6791a987091278bb",
+      "raw": "d9ed155e35b446343e665837ab4ff32927e5de1731460385c2e491a8a48770ac",
+      "daily": "2d596e031663a0514577dba9780c1793dae3dbee1966aa49c452ba5c836db64d"
+    },
+    "preserved": true,
+    "foreign_key_check": []
+  }
+}

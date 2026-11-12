@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-12T07:53:35.346Z",
+  "environment": "staging",
+  "action": "approve-reply",
+  "operator_fixture_posts": 2,
+  "public_number": 3,
+  "snapshot_preserved": true,
+  "answer_rows": 4,
+  "existing_data_not_touched": true
+}

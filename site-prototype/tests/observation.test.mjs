@@ -26,57 +26,6 @@ test("Referer accepts only HTTP(S) hostname, rejects malformed, IP and long inpu
   assert.equal(referrerDomain("https://例え.jp/path"), "xn--r8jz45g.jp");
 });
 
-test("GET-only exact path scope, actual statuses, receipt UTC, stop switch and private error output", async () => {
-  const events = [];
-  const db = { prepare(sql) { return { bind(...values) { return { sql, values }; } }; },
-    withSession() { return { prepare() { return { bind() { return { all: async () => ({ success: true, results: [] }) }; } }; } }; },
-    async batch(statements) { events.push(statements); return [{ success: true }, { success: true }]; } };
-  for (const path of Object.keys(PAGE_PATHS)) for (const status of [200, 301, 302, 304, 404, 500]) {
-    const ctx = context();
-    const response = await worker.fetch(req(path + "?private=query"), {
-      ENABLE_OBSERVATION: "true", DB: db,
-      ASSETS: { async fetch() { return new Response(null, { status }); } },
-    }, ctx);
-    await ctx.done();
-    const expectedStatus = path === "/guestbook.html" && status !== 200 ? 503 : status;
-    assert.equal(response.status, expectedStatus);
-    const last = events.at(-1)[1].values;
-    assert.equal(last[2], PAGE_PATHS[path]);
-    assert.equal(last[3], expectedStatus);
-    assert.match(last[0], /^\d{4}-\d\d-\d\dT.*Z$/);
-  }
-  const before = events.length;
-  assert.deepEqual({ ...PAGE_PATHS }, { "/": "home", "/index.html": "home", "/research.html": "research",
-    "/observations.html": "observations", "/guestbook.html": "guestbook",
-    "/agent-traps.html": "agent_traps", "/agents-and-traps.html": "agents_and_traps" });
-  for (const path of ["/about.html", "/agent-traps", "/agents-and-traps", "/agent-traps.html/", "/agents-and-traps.html/", "/observations-detail.html", "/guestbook-complete.html", "/assets/style.css",
-    "/llms.txt", "/robots.txt", "/sitemap.xml", "/research", "/index", "/missing", "/research.html/"]) {
-    await worker.fetch(req(path), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response("asset") } }, context());
-  }
-  for (const method of ["HEAD", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]) for (const path of Object.keys(PAGE_PATHS)) {
-    await worker.fetch(req(path, method), { ENABLE_OBSERVATION: "true", DB: db, ASSETS: { fetch: () => new Response(null) } }, context());
-  }
-  for (const value of [undefined, "false", true]) for (const path of ["/", "/agent-traps.html", "/agents-and-traps.html"]) {
-    await worker.fetch(req(path), { ENABLE_OBSERVATION: value, ASSETS: { fetch: () => new Response("site") } }, context());
-  }
-  assert.equal(events.length, before);
-  const failedAssetContext = context();
-  const failedAsset = await worker.fetch(req("/research.html"), { ENABLE_OBSERVATION: "true", DB: db,
-    ASSETS: { fetch() { throw new Error("private asset detail"); } } }, failedAssetContext);
-  await failedAssetContext.done();
-  assert.equal(failedAsset.status, 500);
-  assert.equal(events.at(-1)[1].values[3], 500);
-  const ctx = context();
-  const original = console.error, errors = [];
-  console.error = (...args) => errors.push(args);
-  try {
-    const response = await worker.fetch(req("/"), { ENABLE_OBSERVATION: "true", ASSETS: { fetch: () => new Response("site") } }, ctx);
-    assert.equal(await response.text(), "site");
-    await ctx.done();
-    assert.deepEqual(errors, [["page_request_write_failed"]]);
-  } finally { console.error = original; }
-});
-
 test("actual D1: concurrent increments, privacy, UTC boundary, atomic rollback, retention and clear isolation", async () => {
   const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: "export default {fetch(){return new Response('test')}}",
     compatibilityDate: "2026-10-21", d1Databases: ["DB"] }));

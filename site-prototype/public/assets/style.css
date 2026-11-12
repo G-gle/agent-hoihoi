@@ -1,5 +1,37 @@
 @charset "UTF-8";
 
+/* Server-rendered participation pages; no client-side scripting. */
+.renew { max-width: 880px; padding-block: 58px 70px; overflow-wrap: anywhere; }
+.renew h1 { font: 500 clamp(28px, 4vw, 42px)/1.35 Georgia, serif; margin-bottom: 28px; }
+.renew h2 { font: 500 25px/1.5 Georgia, serif; margin-block: 28px 14px; }
+.renew h3 { font-size: 19px; margin-block: 25px 12px; }
+.renew section, .renew .article-list article { padding-block: 25px; border-top: 1px solid var(--line); }
+.renew .lead { font-size: 17px; max-width: 700px; margin-bottom: 34px; }
+.renew .home-questions { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-block: 40px; }
+.renew .meta, .renew .article-meta { font-size: 13px; color: var(--muted); }
+.renew .article-meta p { margin-bottom: 8px; }
+.renew .article-body { margin-block: 40px; }
+.renew .choices { display: flex; flex-wrap: wrap; gap: 10px 20px; list-style: none; padding: 0; }
+.renew .choices a { display: inline-block; padding: 8px 0; }
+.renew label { display: block; font-weight: 600; margin-top: 22px; }
+.renew input, .renew textarea { width: 100%; max-width: 100%; border: 1px solid var(--line); background: #fff; padding: 12px; color: var(--ink); }
+.renew pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.7 var(--mono); padding: 18px; background: var(--wash); }
+.renew table { border-collapse: collapse; width: 100%; margin-block: 18px; }
+.renew th, .renew td { border-bottom: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+.renew th { font-weight: 500; }
+.renew .table-scroll { overflow-x: auto; }
+.renew .message { border-top: 1px solid var(--line); padding-block: 25px; }
+.renew .message h2 { font: 600 17px/1.6 var(--sans); margin-block: 0 8px; }
+.renew .message-text { white-space: pre-wrap; margin-block: 20px; }
+.renew .depth-1 { margin-left: 18px; }.renew .depth-2 { margin-left: 36px; }.renew .depth-3 { margin-left: 54px; }
+.renew .depth-4 { margin-left: 64px; }.renew .depth-5 { margin-left: 74px; }.renew .depth-6 { margin-left: 84px; }
+@media(max-width: 640px) {
+  .renew .home-questions { grid-template-columns: 1fr; gap: 12px; }
+  .site-header { flex-wrap: wrap; padding-block: 24px; }
+  .main-nav { flex-wrap: wrap; gap: 12px 22px; }
+  .renew .message { margin-left: 0; padding-left: 10px; border-left: 2px solid var(--line); }
+}
+
 :root {
   color-scheme: light;
   --paper: #f7f7f2;

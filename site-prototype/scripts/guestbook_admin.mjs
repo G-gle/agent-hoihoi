@@ -10,13 +10,14 @@ export function adminQuery(action, options = {}) {
     const limit = options.limit ?? "50";
     if (!/^[1-9]\d{0,2}$/.test(limit) || Number(limit) > 100) throw new Error("--limit must be 1–100.");
     if (options.id) throw new Error("pending takes --limit, not --id.");
-    return { sql: "SELECT id, created_at, name, message FROM guestbook_posts WHERE status = 'pending' ORDER BY created_at, id LIMIT ?", params: [Number(limit)] };
+    return { sql: "SELECT id, public_no, created_at, name, message, reply_to_id, category, source_kind, article_id, who, chooser, purpose FROM guestbook_posts WHERE status = 'pending' ORDER BY created_at, id LIMIT ?", params: [Number(limit)] };
   }
-  if (!["approve", "delete"].includes(action)) throw new Error("Action: pending | approve | delete");
+  if (!["approve", "reject", "delete"].includes(action)) throw new Error("Action: pending | approve | reject | delete");
   if (!/^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(options.id ?? "")) throw new Error("Specify one UUID with --id. Bulk deletion is not supported.");
   if (options.limit) throw new Error("--limit is only valid with pending.");
   return { sql: action === "approve"
-    ? "UPDATE guestbook_posts SET status = 'approved' WHERE id = ? AND status = 'pending' RETURNING id, status"
+    ? "UPDATE guestbook_posts SET status = 'approved' WHERE id = ? AND status <> 'approved' RETURNING id, status"
+    : action === "reject" ? "UPDATE guestbook_posts SET status = 'rejected' WHERE id = ? AND status <> 'rejected' RETURNING id, status"
     : "DELETE FROM guestbook_posts WHERE id = ? RETURNING id, status", params: [options.id] };
 }
 
@@ -68,12 +69,12 @@ async function main() {
   try {
     const result = await db.query(query.sql, query.params);
     if (!result.success) throw new Error("D1 query failed.");
-    const outcome = positionals[0] === "pending" ? "pending-list" : result.results.length ? positionals[0] === "approve" ? "approved" : "deleted" : "unchanged: ID absent or already approved";
+    const outcome = positionals[0] === "pending" ? "pending-list" : result.results.length ? positionals[0] === "approve" ? "approved" : positionals[0] === "reject" ? "rejected" : "deleted" : "unchanged: ID absent or already in requested state";
     // JSON string encoding prevents submitted ANSI/control text from acting as terminal commands.
     console.log(JSON.stringify({ environment: values.env, location: values.remote ? "remote" : "local",
       database: target.database, database_id: values.remote ? target.id : "local-only", action: positionals[0], outcome, rows: result.results }, null, 2));
   } finally { await db.close(); }
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  main().catch(() => { console.error("Guestbook operation failed. Use pending|approve|delete --env staging|production [--remote] [--id UUID] [--limit 1-100]; production requires --remote. Check the pinned target and local Wrangler authentication."); process.exitCode = 1; });
+  main().catch(() => { console.error("Guestbook operation failed. Use pending|approve|reject|delete --env staging|production [--remote] [--id UUID] [--limit 1-100]; production requires --remote. Check the pinned target and local Wrangler authentication."); process.exitCode = 1; });
 }

@@ -1,0 +1,10 @@
+import { randomBytes } from 'node:crypto';
+import { cloudflare, verifiedDatabase } from './cloudflare_api.mjs';
+const environment=process.argv[2];
+if(!['staging','production'].includes(environment))throw new Error('Specify environment');
+const api=await cloudflare(),target=await verifiedDatabase(api,environment);
+const settings=await api(`workers/scripts/${target.worker}/settings`);
+if(!settings.bindings.some(b=>b.name==='DB'&&b.type==='d1'&&b.id===target.id))throw new Error('Worker target mismatch');
+if(settings.bindings.some(b=>b.name==='PARTICIPATION_SECRET'))throw new Error('Secret already exists; preserve it');
+await api(`workers/scripts/${target.worker}/secrets`,{method:'PUT',body:JSON.stringify({name:'PARTICIPATION_SECRET',type:'secret_text',text:randomBytes(32).toString('base64url')})});
+console.log(`${environment}: dedicated participation secret configured; value not recorded`);
