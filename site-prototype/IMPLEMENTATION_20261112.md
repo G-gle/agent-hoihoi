@@ -42,6 +42,8 @@
 
 ## レビュー3点修正（2026-11-12、stagingのみ）
 
+この節は旧指示に沿った作業履歴。HOMEに2問を縦配置した第1項は、後述の「Visitor questions表示の訂正」で置き換えた。第2・3項の修正は維持する。
+
 依頼: `AgentHoihoi_Review_Fixes_Codex_20261112.md`。着手時は `implement-renew-20261112` / `b9a2074`、未コミット差分なし。受け取ったレビューは表示/CSSの指摘で、回答・投稿の保存確認は行っていないとの説明だった。以下の保存・遷移・DB確認は今回こちらで実施した結果。
 
 ### 修正
@@ -65,3 +67,26 @@
 - staging Version: `1e4697d2-a636-4cb9-9b84-99c80b38120a`。確認用URL: https://agent-hoihoi-staging.molamola.workers.dev/ 、https://agent-hoihoi-staging.molamola.workers.dev/responses.html 。HOMEをブラウザに表示して利用者の確認用に保持。
 - **本番未反映。** 今回の依頼では本番deploy・DB migration・原稿変更・投稿/メール通知の再試験を行っていない。開始時の本番Versionは `df5b7af7-fed2-4c64-8ad1-a047d1407797`。最終照合は `versions-after.json` に記録する。
 - 作業ブランチは `implement-renew-20261112`。修正・対象テスト・画像/検証証跡のコミットは `8aee7cc`（push済み）。この記録と最終Version照合は後続の記録コミットで保存する。次回はこのstagingを利用者が確認した結果から継続し、本番反映の指示があるまで本番へdeployしない。
+
+## Visitor questions表示の訂正（2026-11-12、stagingのみ）
+
+依頼: `AgentHoihoi_Review_Fixes_Codex_20261112 (1).md`。開始時は `implement-renew-20261112` / `53772f2`、差分なし。今回は受領した訂正版で「1問ずつ」の表示単位が明示されたため、前節第1項を訂正。ユーザー提示レビューは閲覧/CSSの確認であり、以下のクリック・HTML・DBの確認は今回こちらで実施した。
+
+- `src/site.js`: HOMEのDB保存済み回答から未回答の先頭1問だけを選び、共通の `visitorQuestion` で「Visitor questions」の枠・現在の質問・選択肢・説明1回を生成する。第2問の既存 `/participate?home=1` でも同じ枠を使う。2問を同じHTMLへ出して隠す処理やJavaScript、新規URLは追加していない。
+- Whoだけ回答済みなら訪問経験だけ、訪問経験だけならWhoだけ、両方回答済みならHOMEに質問を再表示しない。古い第2問URLでもDBの現在の未回答状態を優先する。HOMEのカテゴリ・フッターを維持。
+- `public/assets/style.css`: 旧2問用グリッドを、1問用の共通枠のスタイルに置換。第1問/第2問で背景・罫線・内側余白を共通化。採用済み質問文・選択肢・記録説明を維持し、試作用のstate説明等を転載していない。
+- 前節第2・3項（`articleEntry` によるResponsesの記事導線、保存行のある対象だけのChange response）は変更せず維持。今回のHOME表示に合わせて対象テストのHTML期待値を更新した。
+
+実際に行った確認:
+
+- `node --test tests/review_fixes.test.mjs` の7件と、既存 `participation.test.mjs` のHOME部分回答1件が成功。ローカルWorkerの生のHTMLで初回HOMEに訪問経験の見出し・選択肢・回答リンクがないこと、次画面にWhoを含めないこと、説明1回、同じstateと回答行、部分回答、古いURL、前節第2・3項への影響を検証。全試験・migration・投稿/通知の再試験は実施していない。
+- stagingでPC 1280×1000とスマートフォン390×1000の第1問/第2問を実表示し、計4枚の画像を保存。各画面のDOMにも現在の1問の見出し・3選択肢しかなく、他方の質問の回答リンクは0件。共通見出し/枠/説明は各1つで、背景・罫線・内側余白は同じ。横はみ出しなし。
+- PCの実クリックはWho（Agent）→訪問経験（First visit）→Responses #visit。同じstateで、DBも未回答0行→Whoのみ1行→同じ単位の2行と確認。両方回答後にHOMEへ戻ると枠・2問の見出し・回答リンクを再表示しなかった。
+- スマートフォンの実クリックはWho（Human）→訪問経験だけ→省略→Responses #who。同じstateで、DBはWhoの1行のまま。HOMEへ戻ると未回答の訪問経験だけを表示した。
+- 訪問経験だけの条件は、サイト発行済みの訪問経験回答リンクを新しい試験stateに適用し、既存GET回答処理でNot sureの1行だけを保存して準備。HOMEはWhoだけを表示し、Responsesでは訪問経験の変更リンクだけが表示された。
+- 前節第2・3項のstaging確認は必要な範囲に限定。WhoのみのResponsesから記事タイトルを選ぶとChooserの質問を経由し、省略で元のMuse記事へ進む。変更リンクはWhoだけ/訪問経験だけの保存状態に一致。残りの条件は関係するローカル7件で継続確認した。
+- 最後に今回のstaging試験3回答単位の4行だけを削除し、各単位の回答0行を照合。識別用manifestはGit対象外 `.cloudflare/private/visitor-questions-fixtures.json`。既存回答・投稿・本番データは操作していない。Accessも既存の認証経路のまま。
+
+修正コミットは `94bab89`（`implement-renew-20261112`、push済み）。staging Versionは `55818a75-c0f1-4252-b953-ea9984e7110c`（100%）。確認用URLは https://agent-hoihoi-staging.molamola.workers.dev/ 。ブラウザには試験回答を残さず、初回のWhoだけのHOMEを表示して保持している。
+
+**本番未反映。** 本番Versionは `df5b7af7-fed2-4c64-8ad1-a047d1407797` のままと最終API照合済み。DB migration・原稿変更・投稿/メール通知試験もなし。証跡は `verification/2026-11-12-visitor-questions/`（`browser-checks.json`、`checks.json`、`answers-*.json`、`versions-*.json`、第1問/第2問のPC/スマートフォン画像）。次回は訂正版stagingの確認結果から進め、本番反映の指示があるまで本番へdeployしない。

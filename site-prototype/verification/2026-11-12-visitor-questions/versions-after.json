@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-12T13:36:59.814Z",
+  "fix_commit": "94bab89",
+  "environments": {
+    "staging": [
+      {
+        "version_id": "55818a75-c0f1-4252-b953-ea9984e7110c",
+        "percentage": 100
+      }
+    ],
+    "production": [
+      {
+        "version_id": "df5b7af7-fed2-4c64-8ad1-a047d1407797",
+        "percentage": 100
+      }
+    ]
+  },
+  "production_unchanged": true
+}
