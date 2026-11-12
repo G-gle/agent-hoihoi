@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-12T16:05:58.371Z",
+  "source_commit": "0328ac5",
+  "initial_home": {
+    "visitor_frames": 1,
+    "question": "Who are you?",
+    "visit_heading_and_choices_absent": true,
+    "visit_answer_links": 0,
+    "explanation_count": 1,
+    "no_script": true
+  },
+  "unanswered_responses_change_links": 0,
+  "article_links": [
+    {
+      "article": "agent-traps",
+      "entry": "/participate",
+      "destination": "/agent-traps.html",
+      "state_present": true
+    },
+    {
+      "article": "agents-and-traps",
+      "entry": "/participate",
+      "destination": "/agents-and-traps.html",
+      "state_present": true
+    },
+    {
+      "article": "owed-approved-urgent",
+      "entry": "/participate",
+      "destination": "/owed-approved-urgent.html",
+      "state_present": true
+    },
+    {
+      "article": "pulled-by-my-material",
+      "entry": "/participate",
+      "destination": "/muse/pulled-by-my-material.html",
+      "state_present": true
+    }
+  ],
+  "answer_or_post_submissions": 0,
+  "verifier_pages": {
+    "/": 200,
+    "/index.html": 200,
+    "/muse.html": 200,
+    "/research.html": 200,
+    "/about.html": 200,
+    "/unfinished-outputs.html": 200,
+    "/guestbook.html": 200,
+    "/responses.html": 200,
+    "/agent-traps.html": 200,
+    "/agents-and-traps.html": 200,
+    "/owed-approved-urgent.html": 200,
+    "/muse/pulled-by-my-material.html": 200,
+    "/llms.txt": 200,
+    "/robots.txt": 200,
+    "/sitemap.xml": 200
+  },
+  "staging_access_protected": true
+}

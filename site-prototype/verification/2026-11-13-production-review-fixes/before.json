@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-11-12T16:03:29.094Z",
+  "source_commit": "0328ac5",
+  "environments": {
+    "staging": {
+      "worker": "agent-hoihoi-staging",
+      "database": "agent-hoihoi-staging-db",
+      "database_id": "cbc9ae36-05b9-4862-a3ad-1ac973e1001e",
+      "origin": "https://agent-hoihoi-staging.molamola.workers.dev",
+      "versions": [
+        {
+          "version_id": "55818a75-c0f1-4252-b953-ea9984e7110c",
+          "percentage": 100
+        }
+      ]
+    },
+    "production": {
+      "worker": "agent-hoihoi-production",
+      "database": "agent-hoihoi-production-db",
+      "database_id": "2fe64ba8-21cb-4cc5-8231-93cee3d9d528",
+      "origin": "https://agent-hoihoi-production.molamola.workers.dev",
+      "versions": [
+        {
+          "version_id": "df5b7af7-fed2-4c64-8ad1-a047d1407797",
+          "percentage": 100
+        }
+      ],
+      "migrations": [
+        "0001_environment_check.sql",
+        "0002_page_requests.sql",
+        "0003_guestbook.sql",
+        "0004_article_page_requests.sql",
+        "0005_participation.sql",
+        "0006_registered_article_logs.sql"
+      ],
+      "counts": {
+        "posts": 9,
+        "answers": 11
+      }
+    }
+  }
+}

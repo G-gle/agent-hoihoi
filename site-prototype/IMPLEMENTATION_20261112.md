@@ -90,3 +90,21 @@
 修正コミットは `94bab89`（`implement-renew-20261112`、push済み）。staging Versionは `55818a75-c0f1-4252-b953-ea9984e7110c`（100%）。確認用URLは https://agent-hoihoi-staging.molamola.workers.dev/ 。ブラウザには試験回答を残さず、初回のWhoだけのHOMEを表示して保持している。
 
 **本番未反映。** 本番Versionは `df5b7af7-fed2-4c64-8ad1-a047d1407797` のままと最終API照合済み。DB migration・原稿変更・投稿/メール通知試験もなし。証跡は `verification/2026-11-12-visitor-questions/`（`browser-checks.json`、`checks.json`、`answers-*.json`、`versions-*.json`、第1問/第2問のPC/スマートフォン画像）。次回は訂正版stagingの確認結果から進め、本番反映の指示があるまで本番へdeployしない。
+
+## 確認済み3点修正の本番反映（2026-11-13 JST）
+
+依頼: `AgentHoihoi_Production_Deploy_Codex_20261112.md`。利用者によるstaging確認と本番反映の指示を受け、前節の「本番未反映」から今回の修正を本番へ反映した。
+
+- 開始時は `implement-renew-20261112` / `0328ac5`、未コミット差分なし。stagingは確認済みVersion `55818a75-c0f1-4252-b953-ea9984e7110c` のままだった。`94bab89` 以降の配信対象コードに差がなく、確認済みの1問表示と前節第2・3項を含む同じソースを反映対象とした。今回アプリコードの追加修正なし。
+- 記事build/check成功、生成物の差分なし。既存の固定対象と実APIで本番Worker・専用D1・originを照合し、0005/0006が適用済みであることを読み取り確認した。production用prepare、生成設定 `.cloudflare/wrangler.production.json` によるdry-run、本番deployの順に実行。Wranglerの `--env production` は使用していない。
+- 本番URL: https://agent-hoihoi-production.molamola.workers.dev/ 。反映元コミット `0328ac5`（表示修正 `94bab89`、Responses関連修正 `8aee7cc` を含む）。直前Worker Versionは `df5b7af7-fed2-4c64-8ad1-a047d1407797`、反映後は **`83fac456-a9a8-4026-9b8e-37f2bf30fd81`、100%配信**。
+
+今回、本番で実施した確認:
+
+- 既存の `node scripts/verify_renew_production.mjs` が成功。15ページ/案内が200、4記事の詳細ログと日別件数の記録、本文直リンク、Responsesを含まないサイトマップ、受付不明の404/noindex、投稿フォームまでのstate保持を読み取りで確認。既存の11月12日の証跡ファイルは実行前の内容へ戻し、今回の結果を別フォルダに保存した。
+- 配信された生のHTMLで、初回HOMEにVisitor questionsの枠1つ、Whoの見出しと3選択肢、採用済み説明1回だけがあることを確認。訪問経験の見出し・選択肢・回答リンクを含まず、scriptもない。未回答で直接訪問したResponsesはChange responseが0件、4記事すべてがstate/記事ID/本文URLを持つ `/participate` を向く。
+- 本番ブラウザのPC 1280×1000とスマートフォン390×1000で、Visitor questions＋Whoだけの初回画面を実表示。DOMでも第2問の見出し/回答リンクが0件、横はみ出しなし。画像を保存し、本番HOMEを利用者の確認用に表示して保持した。
+- 保存・省略・選び直しの動作は前節のstaging実クリック/HTML/DB検証結果を採用し、今回は本番の回答リンクや送信ボタンを押していない。試験回答・試験投稿・メール送信・その削除は0回。通常GETに伴うアクセス記録は維持する。
+- 反映前後で本番投稿9件・回答11行が一致、migration履歴も不変。DB初期化/復元、migration再適用、secret再生成、stagingデータの移送なし。stagingのVersionは不変で、未認証GETは引き続きAccessへ転送された。公開後に不具合は見つからず、ロールバックは不要だった。
+
+証跡: `verification/2026-11-13-production-review-fixes/` の `before.json` / `after.json`、`read-only-verifier.json`、`targeted-html.json`、`browser-checks.json`、PC/スマートフォン画像。今回の本番反映と必要な公開後確認は完了、今回範囲の残件なし。この追記と証跡を同じ作業ブランチへコミット/pushする。

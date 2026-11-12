@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-12T16:05:55.174Z",
+  "checkout_commit": "0328ac51c698a60e4262dd66062ee8b75e6ed253",
+  "environment": "production",
+  "cookies_used": false,
+  "javascript_used": false,
+  "pages": {
+    "/": 200,
+    "/index.html": 200,
+    "/muse.html": 200,
+    "/research.html": 200,
+    "/about.html": 200,
+    "/unfinished-outputs.html": 200,
+    "/guestbook.html": 200,
+    "/responses.html": 200,
+    "/agent-traps.html": 200,
+    "/agents-and-traps.html": 200,
+    "/owed-approved-urgent.html": 200,
+    "/muse/pulled-by-my-material.html": 200,
+    "/llms.txt": 200,
+    "/robots.txt": 200,
+    "/sitemap.xml": 200
+  },
+  "production_write_test_performed": false,
+  "production_write_test_omitted_reason": "Read-only checks requested for this deployment; save, skip, and answer changes were verified in staging.",
+  "state_preserved_to_post_form": true,
+  "invalid_receipt_noindex": true,
+  "staging_still_access_protected": true,
+  "worker_version": [
+    {
+      "version_id": "83fac456-a9a8-4026-9b8e-37f2bf30fd81",
+      "percentage": 100
+    }
+  ],
+  "article_logs": {
+    "agent-traps": {
+      "raw": 1,
+      "daily": 74
+    },
+    "agents-and-traps": {
+      "raw": 1,
+      "daily": 50
+    },
+    "owed-approved-urgent": {
+      "raw": 1,
+      "daily": 7
+    },
+    "pulled-by-my-material": {
+      "raw": 2,
+      "daily": 9
+    }
+  },
+  "email_inbox_delivery_independently_confirmed": false
+}

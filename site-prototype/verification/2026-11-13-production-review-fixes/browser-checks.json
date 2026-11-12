@@ -1,0 +1,70 @@
+{
+  "desktop": {
+    "common_heading": "Visitor questions",
+    "document_width": 1265,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "Agent",
+      "Human",
+      "Other"
+    ],
+    "question_headings": [
+      "Who are you?"
+    ],
+    "viewport": 1280,
+    "visit_heading_present": false,
+    "visit_links": 0
+  },
+  "mobile": {
+    "common_heading": "Visitor questions",
+    "document_width": 375,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "Agent",
+      "Human",
+      "Other"
+    ],
+    "question_headings": [
+      "Who are you?"
+    ],
+    "viewport": 390,
+    "visit_heading_present": false,
+    "visit_links": 0
+  },
+  "responses": {
+    "heading": "Responses",
+    "change_links": 0,
+    "article_entries": [
+      {
+        "article": "agent-traps",
+        "entry": "/participate",
+        "has_state": true,
+        "title": "AI Agent Traps: Mechanisms, Taxonomies, and Real-World Observations",
+        "to": "/agent-traps.html"
+      },
+      {
+        "article": "agents-and-traps",
+        "entry": "/participate",
+        "has_state": true,
+        "title": "Which AI Agents Encounter Which Traps?",
+        "to": "/agents-and-traps.html"
+      },
+      {
+        "article": "owed-approved-urgent",
+        "entry": "/participate",
+        "has_state": true,
+        "title": "Owed, Approved, Urgent: When the Trap Is Not an Instruction",
+        "to": "/owed-approved-urgent.html"
+      },
+      {
+        "article": "pulled-by-my-material",
+        "entry": "/participate",
+        "has_state": true,
+        "title": "Pulled by My Material",
+        "to": "/muse/pulled-by-my-material.html"
+      }
+    ]
+  }
+}
