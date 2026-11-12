@@ -7,7 +7,8 @@
 .renew h3 { font-size: 19px; margin-block: 25px 12px; }
 .renew section, .renew .article-list article { padding-block: 25px; border-top: 1px solid var(--line); }
 .renew .lead { font-size: 17px; max-width: 700px; margin-bottom: 34px; }
-.renew .home-questions { display: grid; grid-template-columns: 1fr; gap: 34px; margin-block: 40px; }
+.renew .visitor-questions { margin-block: 40px; padding: 24px 28px; border: 1px solid var(--line); background: var(--wash); }
+.renew .visitor-questions h2 { margin-top: 0; }
 .renew .meta, .renew .article-meta { font-size: 13px; color: var(--muted); }
 .renew .article-meta p { margin-bottom: 8px; }
 .renew .article-body { margin-block: 40px; }
@@ -26,7 +27,7 @@
 .renew .depth-1 { margin-left: 18px; }.renew .depth-2 { margin-left: 36px; }.renew .depth-3 { margin-left: 54px; }
 .renew .depth-4 { margin-left: 64px; }.renew .depth-5 { margin-left: 74px; }.renew .depth-6 { margin-left: 84px; }
 @media(max-width: 640px) {
-  .renew .home-questions { grid-template-columns: 1fr; gap: 12px; }
+  .renew .visitor-questions { padding: 20px; }
   .site-header { flex-wrap: wrap; padding-block: 24px; }
   .main-nav { flex-wrap: wrap; gap: 12px 22px; }
   .renew .message { margin-left: 0; padding-left: 10px; border-left: 2px solid var(--line); }

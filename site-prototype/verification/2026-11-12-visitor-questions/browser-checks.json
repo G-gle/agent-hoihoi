@@ -1,0 +1,191 @@
+{
+  "desktop_first": {
+    "common_headings": 1,
+    "document_width": 1265,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "Agent",
+      "Human",
+      "Other"
+    ],
+    "question_headings": [
+      "Who are you?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "24px 28px",
+      "width": 880
+    },
+    "viewport": 1280,
+    "visit_heading_in_dom": false,
+    "visit_question_links": 0,
+    "who_heading_in_dom": true,
+    "who_question_links": 3
+  },
+  "desktop_second": {
+    "common_headings": 1,
+    "document_width": 1280,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "First visit",
+      "Returning",
+      "Not sure"
+    ],
+    "question_headings": [
+      "Have you been here before?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "24px 28px",
+      "width": 880
+    },
+    "viewport": 1280,
+    "visit_heading_in_dom": true,
+    "visit_question_links": 3,
+    "who_heading_in_dom": false,
+    "who_question_links": 0,
+    "same_state": true
+  },
+  "desktop_results": {
+    "heading": "Responses",
+    "same_state": true,
+    "anchor": "#visit",
+    "change_links": 2
+  },
+  "both_answered_home": {
+    "common_headings": 0,
+    "document_width": 1265,
+    "explanation_count": 0,
+    "frames": 0,
+    "options": [],
+    "question_headings": [],
+    "style": null,
+    "viewport": 1280,
+    "visit_heading_in_dom": false,
+    "visit_question_links": 0,
+    "who_heading_in_dom": false,
+    "who_question_links": 0
+  },
+  "mobile_first": {
+    "common_headings": 1,
+    "document_width": 375,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "Agent",
+      "Human",
+      "Other"
+    ],
+    "question_headings": [
+      "Who are you?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "20px",
+      "width": 335.20001220703125
+    },
+    "viewport": 390,
+    "visit_heading_in_dom": false,
+    "visit_question_links": 0,
+    "who_heading_in_dom": true,
+    "who_question_links": 3
+  },
+  "mobile_second": {
+    "common_headings": 1,
+    "document_width": 390,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "First visit",
+      "Returning",
+      "Not sure"
+    ],
+    "question_headings": [
+      "Have you been here before?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "20px",
+      "width": 350.3999938964844
+    },
+    "viewport": 390,
+    "visit_heading_in_dom": true,
+    "visit_question_links": 3,
+    "who_heading_in_dom": false,
+    "who_question_links": 0,
+    "same_state": true
+  },
+  "mobile_skip": {
+    "heading": "Responses",
+    "same_state": true,
+    "anchor": "#who",
+    "change_questions": [
+      "who"
+    ]
+  },
+  "who_only_home": {
+    "common_headings": 1,
+    "document_width": 375,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "First visit",
+      "Returning",
+      "Not sure"
+    ],
+    "question_headings": [
+      "Have you been here before?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "20px",
+      "width": 335.20001220703125
+    },
+    "viewport": 390,
+    "visit_heading_in_dom": true,
+    "visit_question_links": 3,
+    "who_heading_in_dom": false,
+    "who_question_links": 0
+  },
+  "retained_responses_entry": {
+    "question": "Who chose to visit this page?",
+    "article": "Pulled by My Material"
+  },
+  "visit_only_home": {
+    "common_headings": 1,
+    "document_width": 375,
+    "explanation_count": 1,
+    "frames": 1,
+    "options": [
+      "Agent",
+      "Human",
+      "Other"
+    ],
+    "question_headings": [
+      "Who are you?"
+    ],
+    "style": {
+      "background": "rgb(237, 240, 233)",
+      "border": "0.8px solid rgb(217, 221, 213)",
+      "padding": "20px",
+      "width": 335.20001220703125
+    },
+    "viewport": 390,
+    "visit_heading_in_dom": false,
+    "visit_question_links": 0,
+    "who_heading_in_dom": true,
+    "who_question_links": 3
+  },
+  "visit_only_results": {
+    "change_questions": [
+      "visit"
+    ]
+  }
+}

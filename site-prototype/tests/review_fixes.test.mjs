@@ -24,10 +24,15 @@ async function fixture() {
 
 test('HOME saves Who then visit in one unit and reaches Responses without counting retries',async()=>{
   const f=await fixture(),home=await f.page(f.url('/'));
-  assert(home.indexOf('<h2>Who are you?')<home.indexOf('<h2>Have you been here before?'));
+  assert(home.includes('<h2 id="visitor-questions-title">Visitor questions</h2><h3>Who are you?</h3>'));
+  for(const text of ['Have you been here before?','First visit','Returning','question=visit'])assert(!home.includes(text));
+  assert.equal((home.match(/Selecting an answer records your response\. Participation is optional\./g)||[]).length,1);
   let response=await f.get(find(home,'Agent'));
   let html=await f.page(response.headers.get('location'));
-  assert(html.includes('<h1>Have you been here before?'));
+  assert(html.includes('<h2 id="visitor-questions-title">Visitor questions</h2><h3>Have you been here before?</h3>'));
+  assert(!html.includes('Who are you?'));assert(!html.includes('question=who'));
+  assert.equal((html.match(/Selecting an answer records your response\. Participation is optional\./g)||[]).length,1);
+  assert.equal(new URL(find(html,'First visit'),origin).searchParams.get('state'),f.s.token);
   response=await f.get(find(html,'First visit'));
   const destination=new URL(response.headers.get('location'),origin);
   assert.equal(destination.pathname,'/responses.html');assert.equal(destination.hash,'#visit');
@@ -38,15 +43,27 @@ test('HOME saves Who then visit in one unit and reaches Responses without counti
 });
 
 test('HOME preserves either partial answer on skip and returns to Home when both are unanswered',async()=>{
-  for(const [label,question,next]of [['Agent','who','Have you been here before?'],['Not sure','visit','Who are you?']]) {
-    const f=await fixture(),home=await f.page(f.url('/'));
-    const response=await f.get(find(home,label)),html=await f.page(response.headers.get('location'));
-    assert(html.includes('<h1>'+next));
-    const skip=new URL(find(html,'Continue without answering'),origin);
-    assert.equal(skip.pathname,'/responses.html');assert.equal(skip.hash,'#'+question);assert.equal(f.count(),1);
-  }
-  const f=await fixture(),html=await f.page(f.url('/participate',{home:'1'}));
-  assert.equal(new URL(find(html,'Continue without answering'),origin).pathname,'/');assert.equal(f.count(),0);
+  const partial=await fixture(),home=await partial.page(partial.url('/'));
+  const response=await partial.get(find(home,'Agent')),html=await partial.page(response.headers.get('location'));
+  const skip=new URL(find(html,'Continue without answering'),origin);
+  assert.equal(skip.pathname,'/responses.html');assert.equal(skip.hash,'#who');assert.equal(partial.count(),1);
+  assert.equal(new URL(find(await partial.page(partial.url('/')),'First visit'),origin).searchParams.get('question'),'visit');
+  const f=await fixture(),unanswered=await f.page(f.url('/participate',{home:'1'}));
+  assert.equal(new URL(find(unanswered,'Continue without answering'),origin).pathname,'/');assert.equal(f.count(),0);
+});
+
+test('HOME renders only the current DB-unanswered question and stale steps never re-ask saved answers',async()=>{
+  const f=await fixture();
+  await f.answer('visit','not_sure');
+  let html=await f.page(f.url('/'));assert(html.includes('<h3>Who are you?</h3>'));assert(!html.includes('Have you been here before?'));
+  await f.get(find(html,'Other'));
+  html=await f.page(f.url('/'));assert(!html.includes('Visitor questions'));assert(!html.includes('question=who'));assert(!html.includes('question=visit'));
+  const stale=await f.get(f.url('/participate',{question:'who',home:'1'}));
+  assert.equal(stale.status,303);assert.equal(new URL(stale.headers.get('location'),origin).pathname,'/responses.html');assert.equal(f.count(),2);
+  const partial=await fixture();await partial.answer('who','other');
+  html=await partial.page(partial.url('/'));assert(html.includes('<h3>Have you been here before?</h3>'));assert(!html.includes('Who are you?'));
+  html=await partial.page(partial.url('/participate',{question:'who',home:'1'}));
+  assert(html.includes('<h3>Have you been here before?</h3>'));assert(!html.includes('Who are you?'));
 });
 
 test('unanswered, missing and invalid state show all aggregates but no Change response links',async()=>{

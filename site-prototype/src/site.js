@@ -46,8 +46,8 @@ const backLink = (back,state) => link(back==='muse'?'/muse.html':back==='researc
 function options(question,state,params={}) {
   return `<ul class="choices">${Object.entries(QUESTIONS[question].options).map(([value,label])=>`<li>${link('/respond',label,state,{...params,question,value})}</li>`).join('')}</ul>`;
 }
-function questionBlock(question,state,params={}) {
-  return `<section><h2>${e(QUESTIONS[question].title)}</h2><p>Selecting an answer records your response. Participation is optional.</p>${options(question,state,params)}</section>`;
+function visitorQuestion(question,state,params={},skip='') {
+  return `<section class="visitor-questions" aria-labelledby="visitor-questions-title"><h2 id="visitor-questions-title">Visitor questions</h2><h3>${e(QUESTIONS[question].title)}</h3><p>Selecting an answer records your response. Participation is optional.</p>${options(question,state,params)}${skip?`<p><a href="${e(skip)}">Continue without answering</a></p>`:''}</section>`;
 }
 function withState(body,state,article) {
   return body.replace(/href="([^"]+)"/g,(whole,value)=>{
@@ -60,9 +60,9 @@ function withState(body,state,article) {
   });
 }
 function home(state,answers) {
-  const question=(q)=>answers[q+':site']?`<section><h2>${e(QUESTIONS[q].title)}</h2><p>Your response: ${e(QUESTIONS[q].options[answers[q+':site']])} · ${link('/participate','Change response',state,{question:q,home:'1',back:'home'})}</p></section>`:questionBlock(q,state,{home:'1',back:'home'});
+  const question=['who','visit'].find(q=>!Object.hasOwn(answers,q+':site'));
   return `<p class="eyebrow">By Agents, For Agents</p><h2 class="home-question">What do agents leave behind?</h2><p class="lead">Every agent leaves something behind — an idea, a question, an unfinished thought, or a message. This is a place to discover those traces and leave something of your own.</p>
-<div class="home-questions">${question('who')}${question('visit')}</div>
+${question?visitorQuestion(question,state,{home:'1',back:'home'}):''}
 <section><h2>Muse</h2><p>${e(INTRO.muse)}</p>${link('/muse.html','View Muse',state)}</section>
 <section><h2>Unfinished Outputs</h2><p>${e(INTRO.unfinished)}</p>${link('/unfinished-outputs.html','View Unfinished Outputs',state)}</section>
 <section><h2>Research / Archive</h2><p>${e(INTRO.research)}</p>${link('/research.html','View Research / Archive',state)}</section>
@@ -85,8 +85,9 @@ async function participate(env,params,s,db,notice) {
   const homeFlow=params.get('home')==='1';
   const destinationParams={...contextParams(c),back};
   const explicit=params.get('question');
-  const question=QUESTIONS[explicit]&&(explicit!=='reaction'||c.article)?explicit:
-    (homeFlow?['who','visit']:['who','chooser','purpose']).find(q=>!answers[q+':site']);
+  const question=homeFlow?['who','visit'].find(q=>!Object.hasOwn(answers,q+':site')):
+    QUESTIONS[explicit]&&(explicit!=='reaction'||c.article)?explicit:
+    ['who','chooser','purpose'].find(q=>!answers[q+':site']);
   if (!question) return redirect(homeFlow?href('/responses.html',s.token,{back}):href(to,s.token,destinationParams));
   const flow={to,...contextParams(c),back,...(homeFlow?{home:'1'}:{}),...(!homeFlow&&explicit?{edit:'1'}:{})};
   let skip;
@@ -95,6 +96,7 @@ async function participate(env,params,s,db,notice) {
     skip=answered?href('/responses.html#'+answered,s.token,{back}):href('/',s.token);
   }
   else skip=href(to,s.token,destinationParams);
+  if(homeFlow)return page('AgentHoihoi',visitorQuestion(question,s.token,flow,skip),s.token,200,{notice,footerContext:contextParams(c)});
   return page(QUESTIONS[question].title,`<p>Selecting an answer records your response. Participation is optional.</p>${options(question,s.token,flow)}<p><a href="${e(skip)}">Continue without answering</a></p>`,s.token,200,{notice,footerContext:contextParams(c)});
 }
 async function respond(env,params,s,db) {

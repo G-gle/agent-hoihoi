@@ -1,0 +1,16 @@
+{
+  "staging_version": "55818a75-c0f1-4252-b953-ea9984e7110c",
+  "local_tests": {
+    "review_fixes": 7,
+    "home_partial_regression": 1
+  },
+  "first_and_second_questions_checked_on_desktop_and_mobile": true,
+  "raw_initial_HTML_checked_locally": true,
+  "question_DOM_absence_checked_in_staging": true,
+  "same_question_frame_and_explanation_once": true,
+  "partial_and_complete_DB_states_checked": true,
+  "fixture_groups_removed": 3,
+  "fixture_answers_removed": 4,
+  "production_deployed": false,
+  "remote_migration_or_post_or_notification_tests": false
+}

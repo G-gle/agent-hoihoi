@@ -1,0 +1,21 @@
+{
+  "phase": "desktop-complete",
+  "environment": "staging",
+  "checked_at": "2026-11-12T11:39:44.132Z",
+  "answers_by_fixture": [
+    [
+      {
+        "question_id": "visit",
+        "target_id": "site",
+        "value": "first"
+      },
+      {
+        "question_id": "who",
+        "target_id": "site",
+        "value": "agent"
+      }
+    ]
+  ],
+  "removed_fixture_answers": 0,
+  "production_or_posts_modified": false
+}

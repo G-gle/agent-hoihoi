@@ -105,7 +105,7 @@ test('response retries do not increment, changes update one row, cross-tab disti
 test('home partial answer can skip remaining question into responses; complete home flow shows results',async()=>{
   const f=fixture(),home=await(await f.fetch('/')).text(),agent=links(home).find(l=>l.label==='Agent');
   const r=await f.fetch(agent.url),html=await(await f.fetch(r.headers.get('location'))).text();
-  assert(html.includes('<h1>Have you been here before?'));
+  assert(html.includes('<h3>Have you been here before?</h3>'));
   const skip=links(html).find(l=>l.label==='Continue without answering');assert.equal(new URL(skip.url,origin).pathname,'/responses.html');
   assert.equal(f.db.sqlite.prepare('SELECT count(*) n FROM response_answers').get().n,1);
 });

@@ -1,0 +1,14 @@
+{
+  "staging": [
+    {
+      "version_id": "1e4697d2-a636-4cb9-9b84-99c80b38120a",
+      "percentage": 100
+    }
+  ],
+  "production": [
+    {
+      "version_id": "df5b7af7-fed2-4c64-8ad1-a047d1407797",
+      "percentage": 100
+    }
+  ]
+}

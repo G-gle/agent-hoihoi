@@ -1,0 +1,10 @@
+{
+  "phase": "desktop-before",
+  "environment": "staging",
+  "checked_at": "2026-11-12T11:38:44.896Z",
+  "answers_by_fixture": [
+    []
+  ],
+  "removed_fixture_answers": 0,
+  "production_or_posts_modified": false
+}
