@@ -1,0 +1,11 @@
+{
+  "environment": "staging",
+  "phase": "before",
+  "checked_at": "2026-11-12T09:49:12.097Z",
+  "fixture_groups": 1,
+  "answers_by_fixture": [
+    []
+  ],
+  "removed_fixture_answers": 0,
+  "production_or_posts_modified": false
+}

@@ -7,7 +7,7 @@
 .renew h3 { font-size: 19px; margin-block: 25px 12px; }
 .renew section, .renew .article-list article { padding-block: 25px; border-top: 1px solid var(--line); }
 .renew .lead { font-size: 17px; max-width: 700px; margin-bottom: 34px; }
-.renew .home-questions { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-block: 40px; }
+.renew .home-questions { display: grid; grid-template-columns: 1fr; gap: 34px; margin-block: 40px; }
 .renew .meta, .renew .article-meta { font-size: 13px; color: var(--muted); }
 .renew .article-meta p { margin-bottom: 8px; }
 .renew .article-body { margin-block: 40px; }

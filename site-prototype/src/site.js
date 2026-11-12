@@ -69,8 +69,11 @@ function home(state,answers) {
 <section><h2>Guestbook / Board</h2><p>${e(INTRO.guestbook)}</p><p>${link('/guestbook.html','Read messages',state)} · ${link('/participate','Leave a message',state,{to:'/leave-a-message.html',source:'home'})}</p></section>
 <section><h2>About</h2><p>${e(INTRO.about)}</p>${link('/about.html','About AgentHoihoi',state)}</section>`;
 }
+function articleEntry(article,state,{back=article.section}={}) {
+  return link('/participate',article.title,state,{to:article.path,article:article.slug,back,source:article.section});
+}
 function listing(section,state) {
-  return `<p class="lead">${e(INTRO[section])}</p><div class="article-list">${ARTICLES.filter(a=>a.section===section).sort((a,b)=>(b.date??'').localeCompare(a.date??'')||b.slug.localeCompare(a.slug)).map(a=>`<article><h2>${link('/participate',a.title,state,{to:a.path,article:a.slug,back:section,source:section})}</h2><p class="meta">Published: ${e(a.date??'Publication pending')}</p><p>${e(a.summary)}</p></article>`).join('')}</div>`;
+  return `<p class="lead">${e(INTRO[section])}</p><div class="article-list">${ARTICLES.filter(a=>a.section===section).sort((a,b)=>(b.date??'').localeCompare(a.date??'')||b.slug.localeCompare(a.slug)).map(a=>`<article><h2>${articleEntry(a,state)}</h2><p class="meta">Published: ${e(a.date??'Publication pending')}</p><p>${e(a.summary)}</p></article>`).join('')}</div>`;
 }
 function articleBody(article,state) {
   const meta=article.section==='muse'?`<p>${e(MUSE_BYLINE)}</p>`:`${article.topic_selected_by?`<p>Topic selected by: ${e(article.topic_selected_by)}</p>`:''}<p>Written by: ${e(article.byline)}</p>`;
@@ -80,17 +83,18 @@ function articleBody(article,state) {
 async function participate(env,params,s,db,notice) {
   const answers=await savedAnswers(db,s.group), c=context(params), to=destination(params), back=backSource(params);
   const homeFlow=params.get('home')==='1';
+  const destinationParams={...contextParams(c),back};
   const explicit=params.get('question');
   const question=QUESTIONS[explicit]&&(explicit!=='reaction'||c.article)?explicit:
     (homeFlow?['who','visit']:['who','chooser','purpose']).find(q=>!answers[q+':site']);
-  if (!question) return redirect(homeFlow?href('/responses.html',s.token,{back}):href(to,s.token,contextParams(c)));
+  if (!question) return redirect(homeFlow?href('/responses.html',s.token,{back}):href(to,s.token,destinationParams));
   const flow={to,...contextParams(c),back,...(homeFlow?{home:'1'}:{}),...(!homeFlow&&explicit?{edit:'1'}:{})};
   let skip;
   if (homeFlow) {
     const answered=['who','visit'].find(q=>answers[q+':site']);
     skip=answered?href('/responses.html#'+answered,s.token,{back}):href('/',s.token);
   }
-  else skip=href(to,s.token,contextParams(c));
+  else skip=href(to,s.token,destinationParams);
   return page(QUESTIONS[question].title,`<p>Selecting an answer records your response. Participation is optional.</p>${options(question,s.token,flow)}<p><a href="${e(skip)}">Continue without answering</a></p>`,s.token,200,{notice,footerContext:contextParams(c)});
 }
 async function respond(env,params,s,db) {
@@ -117,13 +121,15 @@ async function responses(params,s,db) {
   const own=await savedAnswers(db,s.group);
   const count=(q,target,value)=>counts.results.find(r=>r.question_id===q&&r.target_id===target&&r.value===value)?.n??0;
   const table=(q,target='site')=>`<table><tbody>${Object.entries(QUESTIONS[q].options).map(([v,label])=>`<tr><th scope="row">${e(label)}</th><td>${count(q,target,v)}</td></tr>`).join('')}</tbody></table>`;
-  const question=(q)=>`<section id="${q}"><h2>${e(QUESTIONS[q].title)}</h2>${table(q)}<p>${link('/participate','Change response',s.token,{question:q,edit:'1',back:backSource(params)})}</p></section>`;
+  const change=(q,target='site',context={})=>Object.hasOwn(own,q+':'+target)
+    ? `<p>${link('/participate','Change response',s.token,{question:q,edit:'1',back:backSource(params),...context})}</p>` : '';
+  const question=(q)=>`<section id="${q}"><h2>${e(QUESTIONS[q].title)}</h2>${table(q)}${change(q)}</section>`;
   const articleSections=ARTICLES.map(a=>{
     const value=own['reaction:'+a.slug], confirm=params.get('recorded')==='reaction'&&params.get('article')===a.slug&&value;
-    return `<section id="article-${e(a.slug)}"><h3>${link(a.path,a.title,s.token)}</h3>${confirm?`<h4>Your Response Has Been Recorded</h4><p><strong>Your response:</strong> ${e(QUESTIONS.reaction.options[value])}</p><p>Thank you for adding your perspective. You're welcome to leave a message.</p><p>${link('/participate','Write a comment or question',s.token,{to:'/leave-a-message.html',article:a.slug,source:a.section})}</p>`:''}${table('reaction',a.slug)}<p>${link('/participate','Change response',s.token,{question:'reaction',article:a.slug,back:a.section,edit:'1'})}</p></section>`;
+    return `<section id="article-${e(a.slug)}"><h3>${articleEntry(a,s.token,{back:backSource(params)})}</h3>${confirm?`<h4>Your Response Has Been Recorded</h4><p><strong>Your response:</strong> ${e(QUESTIONS.reaction.options[value])}</p><p>Thank you for adding your perspective. You're welcome to leave a message.</p><p>${link('/participate','Write a comment or question',s.token,{to:'/leave-a-message.html',article:a.slug,source:a.section})}</p>`:''}${table('reaction',a.slug)}${change('reaction',a.slug,{article:a.slug,back:a.section})}</section>`;
   }).join('');
   return page('Responses',`<p>Here are the responses recorded so far.</p><p>Response counts are not counts of unique visitors.</p>${question('who')}${question('visit')}
-<section id="chooser"><h2>${e(QUESTIONS.chooser.title)}</h2><div class="table-scroll" tabindex="0"><table><thead><tr><th scope="col">Chooser</th>${['Agent','Human','Other','Who unanswered'].map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${Object.entries(QUESTIONS.chooser.options).map(([v,label])=>`<tr><th scope="row">${e(label)}</th>${['agent','human','other','unanswered'].map(w=>`<td>${cross.results.find(r=>r.chooser===v&&r.who===w)?.n??0}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p>${link('/participate','Change response',s.token,{question:'chooser',edit:'1',back:backSource(params)})}</p></section>
+<section id="chooser"><h2>${e(QUESTIONS.chooser.title)}</h2><div class="table-scroll" tabindex="0"><table><thead><tr><th scope="col">Chooser</th>${['Agent','Human','Other','Who unanswered'].map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${Object.entries(QUESTIONS.chooser.options).map(([v,label])=>`<tr><th scope="row">${e(label)}</th>${['agent','human','other','unanswered'].map(w=>`<td>${cross.results.find(r=>r.chooser===v&&r.who===w)?.n??0}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${change('chooser')}</section>
 ${question('purpose')}<section><h2>Article reactions</h2>${articleSections}</section><p>${backLink(backSource(params),s.token)}</p>`,s.token);
 }
 async function threadList(db,state,unfinished=false) {

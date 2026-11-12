@@ -1,0 +1,49 @@
+{
+  "scope": "Three review fixes; staging only",
+  "staging_version": "1e4697d2-a636-4cb9-9b84-99c80b38120a",
+  "local_test_command": "node --test tests/review_fixes.test.mjs",
+  "local_tests_passed": 6,
+  "desktop": {
+    "viewport_width": 1280,
+    "document_width": 1265,
+    "who_top": 457.1,
+    "who_bottom": 691.9,
+    "visit_top": 725.9,
+    "question_left_positions_equal": true,
+    "question_widths_equal": true,
+    "no_horizontal_overflow": true
+  },
+  "mobile": {
+    "viewport_width": 390,
+    "document_width": 375,
+    "who_top": 512,
+    "who_bottom": 776.05,
+    "visit_top": 788.05,
+    "question_left_positions_equal": true,
+    "question_widths_equal": true,
+    "no_horizontal_overflow": true
+  },
+  "staging_browser_checks": {
+    "direct_unanswered_change_links": 0,
+    "who_only_change_links": 1,
+    "responses_article_entries_use_participate": 4,
+    "unanswered_and_partially_answered_question_flow": true,
+    "skip_then_next_normal_entry_asks_again": true,
+    "all_common_answers_open_all_four_correct_articles": true,
+    "other_and_not_sure_changeable": true,
+    "only_answered_article_reaction_changeable": true,
+    "reaction_change_old_count": 0,
+    "reaction_change_new_count": 1,
+    "home_two_answers_reach_responses_visit_anchor": true,
+    "invalid_state_change_links": 0,
+    "invalid_state_article_aggregates_visible": 4,
+    "fixture_groups": 2,
+    "fixture_answer_rows_after_changes": 7,
+    "fixture_answer_rows_removed": 7,
+    "change_links_after_cleanup": 0
+  },
+  "production_deployed": false,
+  "remote_migrations_applied": false,
+  "manuscripts_modified": false,
+  "post_or_notification_tests_run": false
+}

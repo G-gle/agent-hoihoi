@@ -1,0 +1,49 @@
+{
+  "environment": "staging",
+  "phase": "complete",
+  "checked_at": "2026-11-12T09:53:34.482Z",
+  "fixture_groups": 2,
+  "answers_by_fixture": [
+    [
+      {
+        "question_id": "chooser",
+        "target_id": "site",
+        "value": "other"
+      },
+      {
+        "question_id": "purpose",
+        "target_id": "site",
+        "value": "not_sure"
+      },
+      {
+        "question_id": "reaction",
+        "target_id": "pulled-by-my-material",
+        "value": "question"
+      },
+      {
+        "question_id": "visit",
+        "target_id": "site",
+        "value": "not_sure"
+      },
+      {
+        "question_id": "who",
+        "target_id": "site",
+        "value": "other"
+      }
+    ],
+    [
+      {
+        "question_id": "visit",
+        "target_id": "site",
+        "value": "first"
+      },
+      {
+        "question_id": "who",
+        "target_id": "site",
+        "value": "human"
+      }
+    ]
+  ],
+  "removed_fixture_answers": 0,
+  "production_or_posts_modified": false
+}
